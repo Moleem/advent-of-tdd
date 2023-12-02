@@ -56,6 +56,8 @@ class SolutionDraft(content: String) {
     GameState(games)
   }
 
+  def sumPossible: Int = ???
+
 }
 
 class SolutionSpec extends AnyFlatSpec with Matchers with TableDrivenPropertyChecks {
@@ -86,6 +88,12 @@ class SolutionSpec extends AnyFlatSpec with Matchers with TableDrivenPropertyChe
     )
 
     new SolutionDraft(content).getParsedState shouldBe expectedState
+  }
+
+  it should "identify a possible draw" in {
+    val content = "Game 1: 1 red; 1 red, 1 green; 1 red, 1 green, 1 blue"
+
+    new SolutionDraft(content).sumPossible shouldBe 1
   }
 
 }
