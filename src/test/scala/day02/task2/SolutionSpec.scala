@@ -54,7 +54,21 @@ class Solution(content: String) {
     possibleGames.map(_.id).sum
   }
 
-  def sumPowerMin: Int = ???
+  def sumPowerMin: Int = {
+    getParsedState.games.map { game =>
+      val minimumRequirements: Map[String, Int] = game.draws.reduce{ (drawA, drawB) =>
+        val allKeys = drawA.keys ++ drawB.keys
+        allKeys.map{ key =>
+          val countA = drawA.getOrElse(key, 0)
+          val countB = drawB.getOrElse(key, 0)
+
+          (key, Seq(countA, countB).max)
+        }.toMap
+      }
+
+      minimumRequirements.values.product
+    }
+  }.sum
 
 }
 
