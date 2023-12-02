@@ -98,5 +98,11 @@ class SolutionSpec extends AnyFlatSpec with Matchers with TableDrivenPropertyChe
     new SolutionDraft(content).sumPossible shouldBe 1
   }
 
+  it should "identify an impossible draw" in {
+    val content = "Game 1: 13 red; 14 green; 15 blue"
+
+    new SolutionDraft(content).sumPossible shouldBe 0
+  }
+
 }
 
