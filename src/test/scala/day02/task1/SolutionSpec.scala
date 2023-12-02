@@ -90,19 +90,37 @@ class SolutionSpec extends AnyFlatSpec with Matchers with TableDrivenPropertyChe
     new SolutionDraft(content).getParsedState shouldBe expectedState
   }
 
-  it should "identify a possible draw" in {
+  it should "identify a possible round" in {
     val content = "Game 1: 12 red; 13 green; 14 blue"
 
     new SolutionDraft(content).sumPossible shouldBe 1
   }
 
-  it should "identify an impossible draw" in {
+  it should "identify an impossible round" in {
     val content = "Game 1: 13 red; 14 green; 15 blue"
 
     new SolutionDraft(content).sumPossible shouldBe 0
   }
 
-  it should "sum game IDs of possible draws" in {
+  it should "identify an impossible round (due to red)" in {
+    val content = "Game 1: 13 red; 1 green; 1 blue"
+
+    new SolutionDraft(content).sumPossible shouldBe 0
+  }
+
+  it should "identify an impossible round (due to green)" in {
+    val content = "Game 1: 1 red; 14 green; 1 blue"
+
+    new SolutionDraft(content).sumPossible shouldBe 0
+  }
+
+  it should "identify an impossible round (due to blue)" in {
+    val content = "Game 1: 1 red; 15 green; 15 blue"
+
+    new SolutionDraft(content).sumPossible shouldBe 0
+  }
+
+  it should "sum game IDs of possible rounds" in {
     val content =
       """Game 1: 13 red; 14 green; 15 blue
         |Game 2: 14 red; 15 green; 16 blue
