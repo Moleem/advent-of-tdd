@@ -56,9 +56,7 @@ class SolutionDraft(content: String) {
     GameState(games)
   }
 
-  def sumPossible: Int = {
-    1 // just kidding
-  }
+  def sumPossible: Int = ???
 
 }
 
@@ -93,7 +91,7 @@ class SolutionSpec extends AnyFlatSpec with Matchers with TableDrivenPropertyChe
   }
 
   it should "identify a possible draw" in {
-    val content = "Game 1: 1 red; 1 red, 1 green; 1 red, 1 green, 1 blue"
+    val content = "Game 1: 12 red; 13 green; 14 blue"
 
     new SolutionDraft(content).sumPossible shouldBe 1
   }
@@ -102,6 +100,15 @@ class SolutionSpec extends AnyFlatSpec with Matchers with TableDrivenPropertyChe
     val content = "Game 1: 13 red; 14 green; 15 blue"
 
     new SolutionDraft(content).sumPossible shouldBe 0
+  }
+
+  it should "sum game IDs of possible draws" in {
+    val content =
+      """Game 1: 13 red; 14 green; 15 blue
+        |Game 2: 14 red; 15 green; 16 blue
+        |Game 3: 12 red; 13 green; 14 blue""".stripMargin
+
+    new SolutionDraft(content).sumPossible shouldBe 4 // 1+3
   }
 
 }
