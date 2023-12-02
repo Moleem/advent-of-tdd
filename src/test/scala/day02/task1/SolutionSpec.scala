@@ -25,25 +25,31 @@ Determine which games would have been possible if the bag had been loaded with o
 
 case class Game(id: Int, draws: Seq[Map[String, Int]])
 case class GameState(games: Seq[Game])
+
 class SolutionDraft(content: String) {
+  private def parseColorDraw(colorDraw: String): (String, Int) = {
+    val chunks = colorDraw.trim.split(" ")
+    val amount = chunks(0).toInt
+    val color = chunks(1).trim
+    (color, amount)
+  }
+
+  private def parseDraw(draw: String): Map[String, Int] =
+    draw.split(",").map(parseColorDraw).toMap
+
+  private def parseRound(round: String): Seq[Map[String, Int]] =
+    round.split(";").map(parseDraw).toSeq
+
+  private def parseGameId(gameHeader: String): Int =
+    gameHeader.split(" ")(1).toInt
 
   def getParsedState(): GameState = {
     val games = content
       .split("\n")
       .map { line =>
         val lineChunks = line.split(":")
-        val gameId = lineChunks(0).split(" ")(1).toInt
-        val rounds =
-          lineChunks(1).split(";")
-            .map { roundStr =>
-              roundStr.split(",")
-                .map{ drawStr =>
-                  val drawChunks = drawStr.trim.split(" ")
-                  val amount = drawChunks(0).toInt
-                  val color = drawChunks(1).trim
-                  (color, amount)
-                }.toMap
-            }.toSeq
+        val gameId = parseGameId(lineChunks(0))
+        val rounds = parseRound(lineChunks(1))
         Game(gameId, rounds)
       }.toSeq
 
