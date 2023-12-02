@@ -27,7 +27,28 @@ case class Game(id: Int, draws: Seq[Map[String, Int]])
 case class GameState(games: Seq[Game])
 class SolutionDraft(content: String) {
 
-  def getParsedState(): GameState = ???
+  def getParsedState(): GameState = {
+    val games = content
+      .split("\n")
+      .map { line =>
+        val lineChunks = line.split(":")
+        val gameId = lineChunks(0).split(" ")(1).toInt
+        val rounds =
+          lineChunks(1).split(";")
+            .map { roundStr =>
+              roundStr.split(",")
+                .map{ drawStr =>
+                  val drawChunks = drawStr.trim.split(" ")
+                  val amount = drawChunks(0).toInt
+                  val color = drawChunks(1).trim
+                  (color, amount)
+                }.toMap
+            }.toSeq
+        Game(gameId, rounds)
+      }.toSeq
+
+    GameState(games)
+  }
 
 }
 
@@ -37,8 +58,7 @@ class SolutionSpec extends AnyFlatSpec with Matchers with TableDrivenPropertyChe
 
   it should "be able to parse the content correctly" in {
     val content = """Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
-                    |Game 2: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
-                    |""".stripMargin
+                    |Game 2: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red""".stripMargin
 
     val expectedState = GameState(
       Seq(
