@@ -27,6 +27,8 @@ case class Game(id: Int, draws: Seq[Map[String, Int]])
 case class GameState(games: Seq[Game])
 
 class SolutionDraft(content: String) {
+  private val thresholds = Map("red"->12, "green"->13, "blue"->14)
+
   private def parseColorDraw(colorDraw: String): (String, Int) = {
     val chunks = colorDraw.trim.split(" ")
     val amount = chunks(0).toInt
@@ -56,19 +58,19 @@ class SolutionDraft(content: String) {
     GameState(games)
   }
 
-  def sumPossible: Int = {
-    val thresholds = Map("red"->12, "green"->13, "blue"->14)
+  private def isPossibleDraw(color: String, amount: Int): Boolean =
+    thresholds(color) >= amount
 
-    getParsedState.games.filter {
+  def sumPossible: Int = {
+
+    val possibleGames = getParsedState.games.filter {
       game =>
         game.draws.forall{ draw =>
-          draw.toSeq.forall{ case (color, amount) =>
-            thresholds(color) >= amount
-          }
+          draw.toSeq.forall{ case (color, amount) => isPossibleDraw(color, amount)}
         }
     }
-      .map(_.id)
-      .sum
+
+    possibleGames.map(_.id).sum
   }
 
 }
@@ -135,11 +137,11 @@ class SolutionSpec extends AnyFlatSpec with Matchers with TableDrivenPropertyChe
 
   it should "sum game IDs of possible rounds" in {
     val content =
-      """Game 1: 13 red; 14 green; 15 blue
-        |Game 2: 14 red; 15 green; 16 blue
-        |Game 3: 12 red; 13 green; 14 blue""".stripMargin
+      """Game 1: 11 red; 12 green; 13 blue
+        |Game 2: 12 red; 13 green; 14 blue
+        |Game 3: 13 red; 14 green; 15 blue""".stripMargin
 
-    new SolutionDraft(content).sumPossible shouldBe 4 // 1+3
+    new SolutionDraft(content).sumPossible shouldBe 3 // 1+2
   }
 
 }
