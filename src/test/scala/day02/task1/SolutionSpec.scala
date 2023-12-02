@@ -43,7 +43,7 @@ class SolutionDraft(content: String) {
   private def parseGameId(gameHeader: String): Int =
     gameHeader.split(" ")(1).toInt
 
-  def getParsedState(): GameState = {
+  def getParsedState: GameState = {
     val games = content
       .split("\n")
       .map { line =>
