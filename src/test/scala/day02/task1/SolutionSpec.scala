@@ -56,7 +56,9 @@ class SolutionDraft(content: String) {
     GameState(games)
   }
 
-  def sumPossible: Int = ???
+  def sumPossible: Int = {
+    1 // just kidding
+  }
 
 }
 
