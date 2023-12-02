@@ -56,7 +56,20 @@ class SolutionDraft(content: String) {
     GameState(games)
   }
 
-  def sumPossible: Int = ???
+  def sumPossible: Int = {
+    val thresholds = Map("red"->12, "green"->13, "blue"->14)
+
+    getParsedState.games.filter {
+      game =>
+        game.draws.forall{ draw =>
+          draw.toSeq.forall{ case (color, amount) =>
+            thresholds(color) >= amount
+          }
+        }
+    }
+      .map(_.id)
+      .sum
+  }
 
 }
 
