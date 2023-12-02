@@ -86,7 +86,6 @@ class SolutionSpec extends AnyFlatSpec with Matchers with TableDrivenPropertyChe
     )
 
     new SolutionDraft(content).getParsedState shouldBe expectedState
-
   }
 
 }
