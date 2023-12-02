@@ -54,6 +54,8 @@ class Solution(content: String) {
     possibleGames.map(_.id).sum
   }
 
+  def sumPowerMin: Int = ???
+
 }
 
 
@@ -124,6 +126,38 @@ class SolutionSpec extends AnyFlatSpec with Matchers with TableDrivenPropertyChe
         |Game 3: 13 red; 14 green; 15 blue""".stripMargin
 
     new Solution(content).sumPossible shouldBe 3 // 1+2
+  }
+
+  it should "find minimum requirements (all 1)" in {
+    val content = "Game 1: 1 red; 1 green; 1 blue"
+
+    new Solution(content).sumPowerMin shouldBe 1
+  }
+
+  it should "find minimum requirements (one larger)" in {
+    val content = "Game 1: 2 red; 1 green; 1 blue"
+
+    new Solution(content).sumPowerMin shouldBe 2
+  }
+
+  it should "find minimum requirements (find max across draws)" in {
+    val content = "Game 1: 2 red; 1 red, 1 green; 1 blue"
+
+    new Solution(content).sumPowerMin shouldBe 2
+  }
+
+  it should "find minimum power" in {
+    val content = "Game 1: 1 red; 2 green; 3 blue"
+
+    new Solution(content).sumPowerMin shouldBe 6
+  }
+
+  it should "sum minimum powers" in {
+    val content =
+      """Game 1: 1 red; 2 green; 3 blue
+        |Game 2: 1 red; 2 green; 3 blue""".stripMargin
+
+    new Solution(content).sumPowerMin shouldBe 12
   }
 
 }
