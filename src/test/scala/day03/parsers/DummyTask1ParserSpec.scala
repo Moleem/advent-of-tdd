@@ -5,13 +5,9 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 import utils.ContentParser
 
-case class EngineSchema(numbers: Seq[Int]) {
+object SymbolAwareEngineSchemaParser extends ContentParser[Seq[Int]] {
 
-}
-
-object SymbolAwareEngineSchemaParser extends ContentParser[EngineSchema] {
-
-  override def parse(content: String): EngineSchema = {
+  override def parse(content: String): Seq[Int] = {
     ???
   }
 
@@ -27,7 +23,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.1.
         |...""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(1))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(1)
   }
 
   it should "identify a number with a symbol next to it (top)" in {
@@ -36,7 +32,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.1.
         |...""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(1))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(1)
   }
 
   it should "identify a number with a symbol next to it (top right)" in {
@@ -45,7 +41,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.1.
         |...""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(1))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(1)
   }
 
   it should "identify a number with a symbol next to it (right)" in {
@@ -54,7 +50,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.1#
         |...""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(1))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(1)
   }
 
   it should "identify a number with a symbol next to it (bottom right)" in {
@@ -63,7 +59,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.1.
         |..#""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(1))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(1)
   }
 
   it should "identify a number with a symbol next to it (bottom)" in {
@@ -72,7 +68,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.1.
         |.#.""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(1))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(1)
   }
 
   it should "identify a number with a symbol next to it (bottom left)" in {
@@ -81,7 +77,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.1.
         |#..""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(1))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(1)
   }
 
   it should "identify a number with a symbol next to it (left)" in {
@@ -90,7 +86,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |#1.
         |...""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(1))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(1)
   }
 
   it should "identify a multi-digit number with a symbol next to it (top left)" in {
@@ -99,7 +95,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.25.
         |....""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(25))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(25)
   }
 
   it should "identify a multi-digit number with a symbol next to it (top1)" in {
@@ -108,7 +104,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.25.
         |....""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(25))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(25)
   }
 
   it should "identify a multi-digit number with a symbol next to it (top2)" in {
@@ -117,7 +113,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.25.
         |....""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(25))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(25)
   }
 
   it should "identify a multi-digit number with a symbol next to it (top right)" in {
@@ -126,7 +122,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.25.
         |....""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(25))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(25)
   }
 
   it should "identify a multi-digit number with a symbol next to it (right)" in {
@@ -135,7 +131,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.25#
         |....""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(25))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(25)
   }
 
   it should "identify a multi-digit number with a symbol next to it (bottom right)" in {
@@ -144,7 +140,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.25.
         |...#""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(25))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(25)
   }
 
   it should "identify a multi-digit number with a symbol next to it (bottom2)" in {
@@ -153,7 +149,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.25.
         |..#.""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(25))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(25)
   }
 
   it should "identify a multi-digit number with a symbol next to it (bottom1)" in {
@@ -162,7 +158,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.25.
         |.#..""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(25))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(25)
   }
 
   it should "identify a multi-digit number with a symbol next to it (bottom left)" in {
@@ -171,7 +167,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |.25.
         |#...""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(25))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(25)
   }
 
   it should "identify a multi-digit number with a symbol next to it (left)" in {
@@ -180,7 +176,7 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |#25.
         |....""".stripMargin
 
-    SymbolAwareEngineSchemaParser.parse(input) shouldBe EngineSchema(Seq(25))
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(25)
   }
 
 }
