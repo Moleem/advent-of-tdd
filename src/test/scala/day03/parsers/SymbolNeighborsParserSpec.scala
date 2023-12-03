@@ -12,7 +12,7 @@ object SymbolNeighborsParser extends ContentParser[Set[SymbolRecord]] {
   override def parse(content: String): Set[SymbolRecord] = ???
 }
 
-class GearPartsParserSpec extends AnyFlatSpec with Matchers with TableDrivenPropertyChecks {
+class SymbolNeighborsParserSpec extends AnyFlatSpec with Matchers with TableDrivenPropertyChecks {
 
   behavior of "SymbolNeighborsParser"
 
