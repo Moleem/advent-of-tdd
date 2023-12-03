@@ -5,10 +5,48 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 import utils.ContentParser
 
+import scala.annotation.tailrec
+
 object SymbolAwareEngineSchemaParser extends ContentParser[Seq[Int]] {
 
+    @tailrec
+    private def getNumbers(engineVector: List[Char], digitsAccumulator: Option[Int], numsAccumulator: List[Int]): Seq[Int] = {
+    (engineVector, digitsAccumulator) match {
+      case (Nil, None) =>
+        numsAccumulator
+      case (Nil, Some(num)) =>
+        num :: numsAccumulator
+      case (head :: tail, None) if !head.isDigit =>
+        getNumbers(tail, digitsAccumulator, numsAccumulator)
+      case (head :: tail, None) if head.isDigit =>
+        getNumbers(tail, Some(Character.getNumericValue(head)), numsAccumulator)
+      case (head :: tail, Some(num)) if !head.isDigit =>
+        getNumbers(tail, None, num :: numsAccumulator)
+      case (head :: tail, Some(num)) if head.isDigit =>
+        getNumbers(tail, Some(num * 10 + Character.getNumericValue(head)), numsAccumulator)
+    }
+  }
+
   override def parse(content: String): Seq[Int] = {
-    ???
+    val engineMatrix: Seq[Seq[Char]] = content.split("\n").toSeq.map(_.toSeq)
+
+    val engineVector: List[Char] = engineMatrix.map(_.mkString).mkString(".").toList
+
+    val res = getNumbers(engineVector, None, List.empty)
+    res
+
+//    val rowCount: Int = engineMatrix.length
+//    val colCount: Int = engineMatrix.head.length
+
+//    val symbolMask: Seq[Seq[Boolean]] =
+//      (0 until rowCount).map(row =>
+//        (0 until colCount).map { col =>
+//          def isSymbol(c: Char): Boolean = !(c.isDigit || c == '.')
+//
+//          isSymbol(engineMatrix(row)(col))
+//        }.toSeq
+//      ).toSeq
+
   }
 
 }
