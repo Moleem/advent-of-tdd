@@ -17,6 +17,15 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
 
   behavior of "SymbolAwareEngineSchemaParser"
 
+  it should "not identify a number without a symbol next to it" in {
+    val input =
+      """...
+        |.1.
+        |...""".stripMargin
+
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq.empty
+  }
+
   it should "identify a number with a symbol next to it (top left)" in {
     val input =
       """#..
@@ -87,6 +96,15 @@ class SymbolAwareEngineSchemaParserSpec extends AnyFlatSpec with Matchers with T
         |...""".stripMargin
 
     SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq(1)
+  }
+
+  it should "not identify a multi-digit number without a symbol next to it" in {
+    val input =
+      """....
+        |.25.
+        |....""".stripMargin
+
+    SymbolAwareEngineSchemaParser.parse(input) shouldBe Seq.empty
   }
 
   it should "identify a multi-digit number with a symbol next to it (top left)" in {
