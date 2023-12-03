@@ -1,13 +1,13 @@
 package day03.misc
 
-import day03.model
-import day03.model.{NumberRecord, Point, Region}
+
+import day03.model._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 object NeighborHoodLocator {
   def locateNeighborhood(region: Region): Region =
-    ???
+    Region(Point(region.topLeft.x-1, region.topLeft.y-1), Point(region.bottomRight.x+1, region.bottomRight.y+1))
 }
 
 class NeighborHoodLocatorSpec extends AnyFlatSpec with Matchers {
