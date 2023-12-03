@@ -4,20 +4,7 @@ import day03.model.Point
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-object GearLocator {
-  def locateGears(input: String): Set[Point] = {
-    val matrix = input.split("\n").map(_.toList).toList
 
-    (0 until matrix.length).flatMap { row =>
-      (0 until matrix.head.length).map { col =>
-        (row, col)
-      }
-    }
-      .filter { case (row, col) => matrix(row)(col) == '*'}
-      .map { case (row, col) => Point(row, col) }
-      .toSet
-  }
-}
 class GearLocatorSpec extends AnyFlatSpec with Matchers {
 
   behavior of "GearLocator"
