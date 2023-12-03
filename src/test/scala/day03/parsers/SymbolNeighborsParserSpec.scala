@@ -1,5 +1,6 @@
 package day03.parsers
 
+import day03.misc.{NeighborHoodLocator, NumberLocator, SymbolLocator}
 import day03.model.{NumberRecord, Point, Region, SymbolRecord}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -9,12 +10,53 @@ import utils.ContentParser
 
 object SymbolNeighborsParser extends ContentParser[Set[SymbolRecord]] {
 
-  override def parse(content: String): Set[SymbolRecord] = ???
+  private implicit class PointExtension(p: Point) {
+    def within(region: Region): Boolean = {
+      p.x >= region.topLeft.x &&
+      p.x <= region.bottomRight.x &&
+      p.y >= region.topLeft.y &&
+      p.y <= region.bottomRight.y
+    }
+  }
+
+  override def parse(content: String): Set[SymbolRecord] = {
+    val matrix: List[List[Char]] = content.split("\n").map(_.toList).toList
+
+    val numbers: Set[NumberRecord] = NumberLocator.locateNumbers(content)
+    val numberNeighborhoods: Map[NumberRecord, Region] =
+      numbers.map(num => num -> NeighborHoodLocator.locateNeighborhood(num.area)).toMap
+    val symbols: Set[Point] = SymbolLocator.locateSymbols(content)
+
+
+    symbols.map { point =>
+      val attachedNumbers = numbers.filter(num => point.within(numberNeighborhoods(num)))
+      SymbolRecord(matrix(point.x)(point.y), point, attachedNumbers)
+    }
+
+
+
+  }
 }
 
 class SymbolNeighborsParserSpec extends AnyFlatSpec with Matchers with TableDrivenPropertyChecks {
 
   behavior of "SymbolNeighborsParser"
+
+  it should "find no attachments" in {
+    val input =
+      """*..
+        |...
+        |..1""".stripMargin
+
+    val expectedResult = Set(
+      SymbolRecord(
+        '*', Point(0, 0),
+        Set.empty
+      )
+    )
+
+    SymbolNeighborsParser.parse(input) shouldBe expectedResult
+  }
 
   it should "find attachment to a single digit (top left)" in {
     val input =
