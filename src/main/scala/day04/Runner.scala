@@ -1,7 +1,7 @@
 package day04
 
 import day04.parsers.ScratchCardPileParser
-import day04.solvers.SumWinScores
+import day04.solvers.{CountCards, SumWinScores}
 import utils.PrintSolution
 
 object Runner extends App {
@@ -14,10 +14,10 @@ object Runner extends App {
     problemSolver = SumWinScores
   )
 
-//  PrintSolution(
-//    inputFileName = s"/$dayNum/input-2.txt",
-//    contentParser = DummyTask2Parser,
-//    problemSolver = DummyTask2Solver
-//  )
+  PrintSolution(
+    inputFileName = s"/$dayNum/input-2.txt",
+    contentParser = ScratchCardPileParser,
+    problemSolver = CountCards
+  )
 
 }

@@ -12,6 +12,7 @@ object CountCards extends ProblemSolver[List[ScratchCardRecord], Int] {
     pile match {
       case Nil => processedCount
       case next :: rest =>
+        println(s"Processing card $next, # of remaining cards to process ${rest.size}")
         val winCountForNext = cache(next)
         val cardsWon =
           if (winCountForNext > 0) (next+1 to next+winCountForNext).toList
