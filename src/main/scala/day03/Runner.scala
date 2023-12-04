@@ -1,9 +1,8 @@
 package day03
 
-import day00.parsers._
-import day00.solvers._
-import day03.parsers.SymbolAwareEngineSchemaParser
-import utils.{PrintSolution, ProblemSolver}
+import day03.parsers.{AttachmentParser, SymbolAwareEngineSchemaParser}
+import day03.solvers.SumGearRatios
+import utils.PrintSolution
 
 object Runner extends App {
 
@@ -15,10 +14,10 @@ object Runner extends App {
     problemSolver = (input: Seq[Int]) => input.sum
   )
 
-//  PrintSolution(
-//    inputFileName = s"/$dayNum/input-2.txt",
-//    contentParser = DummyTask2Parser,
-//    problemSolver = DummyTask2Solver
-//  )
+  PrintSolution(
+    inputFileName = s"/$dayNum/input-2.txt",
+    contentParser = AttachmentParser,
+    problemSolver = SumGearRatios
+  )
 
 }
