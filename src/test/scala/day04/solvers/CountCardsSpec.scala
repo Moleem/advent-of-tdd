@@ -5,10 +5,34 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import utils.ProblemSolver
 
+import scala.annotation.tailrec
+
 
 object CountCards extends ProblemSolver[List[ScratchCardRecord], Int] {
-  override def solve(input: List[ScratchCardRecord]): Int =
-    ???
+
+  @tailrec
+  private def processCards(pile: List[Int], cache: Map[Int, Int], processedCount: Int): Int =
+    pile match {
+      case Nil => processedCount
+      case next :: rest =>
+        val winCountForNext = cache(next)
+        val cardsWon =
+          if (winCountForNext > 0) (next+1 to next+winCountForNext).toList
+          else List.empty
+        processCards(rest ++ cardsWon, cache, processedCount+1)
+    }
+
+  override def solve(input: List[ScratchCardRecord]): Int = {
+    val cardScores: Map[Int, Int] =
+      input
+      .map(card => card.lotteryNumbers.intersect(card.ownNumbers))
+      .map(_.size)
+      .zipWithIndex
+      .map { case (count, index) => (index+1) -> count}
+      .toMap
+
+    processCards(cardScores.keys.toList.sorted, cardScores, 0)
+  }
 }
 
 
@@ -21,7 +45,7 @@ class CountCardsSpec extends AnyFlatSpec with Matchers {
       ScratchCardRecord(List(1, 2, 3), List(4, 5, 6)) // 0, counted 1 time(s)
     )
 
-    SumWinScores.solve(input) shouldBe 1
+    CountCards.solve(input) shouldBe 1
   }
 
   it should "correctly count 1 winning card and it's non-winning reward card" in {
@@ -30,7 +54,7 @@ class CountCardsSpec extends AnyFlatSpec with Matchers {
       ScratchCardRecord(List(1, 2, 3), List(4, 5, 6))  // 0, counted 2 time(s)
     )
 
-    SumWinScores.solve(input) shouldBe 3
+    CountCards.solve(input) shouldBe 3
   }
 
   it should "correctly score 2 winning cards and their transitive non-winning reward cards" in {
@@ -41,7 +65,7 @@ class CountCardsSpec extends AnyFlatSpec with Matchers {
       ScratchCardRecord(List(1, 2, 3), List(4, 5, 6))  // 0, counted 2 time(s)
     )
 
-    SumWinScores.solve(input) shouldBe 6
+    CountCards.solve(input) shouldBe 6
   }
 
   it should "correctly count 1 winning card and it's winning reward card" in {
@@ -51,7 +75,7 @@ class CountCardsSpec extends AnyFlatSpec with Matchers {
       ScratchCardRecord(List(1, 2, 3), List(4, 5, 6))  // 0, counted 3 time(s)
     )
 
-    SumWinScores.solve(input) shouldBe 6
+    CountCards.solve(input) shouldBe 6
   }
 
   it should "correctly count multi-winning card and it's winning reward cards" in {
@@ -61,7 +85,7 @@ class CountCardsSpec extends AnyFlatSpec with Matchers {
       ScratchCardRecord(List(1, 2, 3), List(4, 5, 6))  // 0, counted 4 time(s)
     )
 
-    SumWinScores.solve(input) shouldBe 7
+    CountCards.solve(input) shouldBe 7
   }
 
   it should "correctly count original example" in {
@@ -74,7 +98,7 @@ class CountCardsSpec extends AnyFlatSpec with Matchers {
       ScratchCardRecord(List(31, 18, 13, 56, 72), List(74, 77, 10, 23, 35, 67, 36, 11)),  // 0, counted 1  time(s)
     )
 
-    SumWinScores.solve(input) shouldBe 30
+    CountCards.solve(input) shouldBe 30
   }
 
 }
