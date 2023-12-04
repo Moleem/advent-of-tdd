@@ -8,17 +8,25 @@ import scala.annotation.tailrec
 object CountCards extends ProblemSolver[List[ScratchCardRecord], Int] {
 
   @tailrec
-  private def processCards(pile: List[Int], cache: Map[Int, Int], processedCount: Int): Int =
+  private def processCards(pile: List[Int], cardScores: Map[Int, Int], cardProcessCounts: Map[Int, Int]): Int =
     pile match {
-      case Nil => processedCount
+      case Nil =>
+        cardProcessCounts.values.sum
       case next :: rest =>
-        println(s"Processing card $next, # of remaining cards to process ${rest.size}")
-        val winCountForNext = cache(next)
-        val cardsWon =
-          if (winCountForNext > 0) (next+1 to next+winCountForNext).toList
+        val winCountForNext = cardScores(next)
+        val cardsToModify =
+          if (winCountForNext > 0) (next + 1 to next + winCountForNext).toList
           else List.empty
-        processCards(rest ++ cardsWon, cache, processedCount+1)
+
+        val newCounts =
+          cardProcessCounts.map { case (key, value) =>
+            if (cardsToModify.contains(key)) key -> (value + cardProcessCounts(next))
+            else key -> value
+          }
+
+        processCards(rest, cardScores, newCounts)
     }
+
 
   override def solve(input: List[ScratchCardRecord]): Int = {
     val cardScores: Map[Int, Int] =
@@ -29,6 +37,12 @@ object CountCards extends ProblemSolver[List[ScratchCardRecord], Int] {
         .map { case (count, index) => (index+1) -> count}
         .toMap
 
-    processCards(cardScores.keys.toList.sorted, cardScores, 0)
+    val cardProcessCounts: Map[Int, Int] =
+      cardScores
+        .keys
+        .map { _ -> 1 }
+        .toMap
+
+    processCards(cardScores.keys.toList.sorted, cardScores, cardProcessCounts)
   }
 }

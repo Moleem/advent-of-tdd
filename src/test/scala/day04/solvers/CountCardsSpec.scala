@@ -3,9 +3,6 @@ package day04.solvers
 import day04.model.ScratchCardRecord
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import utils.ProblemSolver
-
-import scala.annotation.tailrec
 
 
 class CountCardsSpec extends AnyFlatSpec with Matchers {
