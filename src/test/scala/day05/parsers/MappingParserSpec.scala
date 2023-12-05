@@ -20,11 +20,31 @@ object MappingParser extends ContentParser[Mappings] {
 
     val contentBlocks = content.split("\n\n")
 
-    val seeds = contentBlocks(0).split(":")(1).trim.split(" ").map(_.trim.toInt).toList
+    val seeds =
+      contentBlocks(0)
+        .split(":")(1)
+        .trim
+        .split(" ")
+        .map(_.trim.toInt)
+        .toList
+
+    val seedToSoilMap =
+      contentBlocks(1)
+        .split("\n")
+        .tail
+        .map { line =>
+          val nums = line.split(" ").map(_.trim.toInt)
+          (nums(0), nums(1), nums(2))
+        }
+        .flatMap { case (mappingValuesStart, mappingKeysStart, mappingLength) =>
+          val keys = (mappingKeysStart until mappingKeysStart+mappingLength).toList
+          val values = (mappingValuesStart until mappingKeysStart+mappingLength).toList
+          keys.zip(values)
+        }.toMap
 
     Mappings(
       seeds,
-      Map.empty,
+      seedToSoilMap,
       Map.empty,
       Map.empty,
       Map.empty,
