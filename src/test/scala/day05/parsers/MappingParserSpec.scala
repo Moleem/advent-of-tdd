@@ -47,12 +47,12 @@ object MappingParser extends ContentParser[Mappings] {
     Mappings(
       parseSeedsLine(contentBlocks(0)),
       parseMappingBlock(contentBlocks(1)),
-      Map.empty,
-      Map.empty,
-      Map.empty,
-      Map.empty,
-      Map.empty,
-      Map.empty
+      parseMappingBlock(contentBlocks(2)),
+      parseMappingBlock(contentBlocks(3)),
+      parseMappingBlock(contentBlocks(4)),
+      parseMappingBlock(contentBlocks(5)),
+      parseMappingBlock(contentBlocks(6)),
+      parseMappingBlock(contentBlocks(7))
     )
   }
 }
@@ -153,7 +153,7 @@ class MappingParserSpec extends AnyFlatSpec with Matchers {
     val mappings = MappingParser.parse(mappingInput)
 
     mappings.temperatureToHumidityMap(69) shouldBe 0
-    mappings.temperatureToHumidityMap(0+1-1) shouldBe 0+1-1
+    mappings.temperatureToHumidityMap(69+1-1) shouldBe 0+1-1
   }
 
   it should "correctly parse humidity to location map [56:56+37[" in {
