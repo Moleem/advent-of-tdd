@@ -1,33 +1,31 @@
 package day05.parsers
 
-import day05.model.Mappings
+import day05.model.{MappingRange, Mappings}
 import utils.ContentParser
 
 object MappingParser extends ContentParser[Mappings] {
 
-  private def parseSeedsLine(contentLine: String): List[Int] =
+  private def parseSeedsLine(contentLine: String): List[Long] =
     contentLine
       .split(":")(1)
       .trim
       .split(" ")
-      .map(_.trim.toInt)
+      .map(_.trim.toLong)
       .toList
 
-
-  private def parseMappingBlock(contentBlock: String): Map[Int, Int] =
+  private def parseMappingBlock(contentBlock: String): List[MappingRange] = {
     contentBlock
       .split("\n")
       .tail
       .map { line =>
-        val nums = line.split(" ").map(_.trim.toInt)
+        val nums = line.split(" ").map(_.trim.toLong)
         (nums(0), nums(1), nums(2))
       }
-      .flatMap { case (mappingValuesStart, mappingKeysStart, mappingLength) =>
-        val keys = (mappingKeysStart until mappingKeysStart + mappingLength).toList
-        val values = (mappingValuesStart until mappingValuesStart + mappingLength).toList
-        keys.zip(values)
-      }.toMap
-      .withDefault(x => x)
+      .map { case (mappingValuesStart, mappingKeysStart, mappingLength) =>
+        MappingRange(mappingKeysStart, mappingKeysStart+mappingLength-1, mappingValuesStart-mappingKeysStart)
+      }
+      .toList
+  }
 
   override def parse(content: String): Mappings = {
     val contentBlocks = content.split("\n\n")

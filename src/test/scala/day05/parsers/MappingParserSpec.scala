@@ -1,5 +1,6 @@
 package day05.parsers
 
+import day05.model.MappingRange
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -47,67 +48,49 @@ class MappingParserSpec extends AnyFlatSpec with Matchers {
     MappingParser.parse(mappingInput).seeds shouldBe List(79, 14, 55, 13)
   }
 
-  it should "correctly parse seed to soil map [0:49]" in {
-    val mappings = MappingParser.parse(mappingInput).seedToSoilMap
-
-    mappings(0) shouldBe 0
-    mappings(49) shouldBe 49
-  }
-
-  it should "correctly parse seed to soil map [50:50+48[" in {
-    val mappings = MappingParser.parse(mappingInput).seedToSoilMap
-
-    mappings(50) shouldBe 52
-    mappings(97) shouldBe 99
-  }
-
-  it should "correctly parse seed to soil map [98:98+2[" in {
-    val mappings = MappingParser.parse(mappingInput).seedToSoilMap
-
-    mappings(98) shouldBe 50
-    mappings(99) shouldBe 51
-  }
-
-  it should "correctly parse soil to fertilizer map [15:15+37[" in {
+  it should "correctly parse seed to soil map" in {
     val mappings = MappingParser.parse(mappingInput)
 
-    mappings.soilToFertilizerMap(15) shouldBe 0
-    mappings.soilToFertilizerMap(15+37-1) shouldBe 0+37-1
+    mappings.seedToSoilMap should contain theSameElementsAs List(
+      MappingRange(from = 50, to = 97, delta = 2),
+      MappingRange(from = 98, to = 99, delta = -48),
+    )
   }
 
-  it should "correctly parse fertilizer to water map [53:53+8[" in {
+  it should "correctly parse soil to fertilizer map" in {
     val mappings = MappingParser.parse(mappingInput)
 
-    mappings.fertilizerToWaterMap(53) shouldBe 49
-    mappings.fertilizerToWaterMap(53+8-1) shouldBe 49+8-1
+    ???
   }
 
-  it should "correctly parse water to light map [18:18+7[" in {
+  it should "correctly parse fertilizer to water map" in {
     val mappings = MappingParser.parse(mappingInput)
 
-    mappings.waterToLightMap(18) shouldBe 88
-    mappings.waterToLightMap(18+7-1) shouldBe 88+7-1
+    ???
   }
 
-  it should "correctly parse light to temperature map [77:77+23[" in {
+  it should "correctly parse water to light map" in {
     val mappings = MappingParser.parse(mappingInput)
 
-    mappings.lightToTemperatureMap(77) shouldBe 45
-    mappings.lightToTemperatureMap(77+23-1) shouldBe 45+23-1
+    ???
   }
 
-  it should "correctly parse temperature to humidity map [69:69+1[" in {
+  it should "correctly parse light to temperature map" in {
     val mappings = MappingParser.parse(mappingInput)
 
-    mappings.temperatureToHumidityMap(69) shouldBe 0
-    mappings.temperatureToHumidityMap(69+1-1) shouldBe 0+1-1
+    ???
   }
 
-  it should "correctly parse humidity to location map [56:56+37[" in {
+  it should "correctly parse temperature to humidity map" in {
     val mappings = MappingParser.parse(mappingInput)
 
-    mappings.humidityToLocationMap(56) shouldBe 60
-    mappings.humidityToLocationMap(56+37-1) shouldBe 60+37-1
+    ???
+  }
+
+  it should "correctly parse humidity to location map" in {
+    val mappings = MappingParser.parse(mappingInput)
+
+    ???
   }
 
 }
