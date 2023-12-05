@@ -124,8 +124,8 @@ class MappingParserSpec extends AnyFlatSpec with Matchers {
   it should "correctly parse soil to fertilizer map [15:15+37[" in {
     val mappings = MappingParser.parse(mappingInput)
 
-    mappings.soilToFertilizerMap(15) shouldBe (0)
-    mappings.soilToFertilizerMap(15+37-1) shouldBe (0+37-1)
+    mappings.soilToFertilizerMap(15) shouldBe 0
+    mappings.soilToFertilizerMap(15+37-1) shouldBe 0+37-1
   }
 
   it should "correctly parse fertilizer to water map [53:53+8[" in {
