@@ -16,7 +16,23 @@ case class Mappings(
                    )
 
 object MappingParser extends ContentParser[Mappings] {
-  override def parse(content: String): Mappings = ???
+  override def parse(content: String): Mappings = {
+
+    val contentBlocks = content.split("\n\n")
+
+    val seeds = contentBlocks(0).split(":")(1).trim.split(" ").map(_.trim.toInt).toList
+
+    Mappings(
+      seeds,
+      Map.empty,
+      Map.empty,
+      Map.empty,
+      Map.empty,
+      Map.empty,
+      Map.empty,
+      Map.empty
+    )
+  }
 }
 
 class MappingParserSpec extends AnyFlatSpec with Matchers {
