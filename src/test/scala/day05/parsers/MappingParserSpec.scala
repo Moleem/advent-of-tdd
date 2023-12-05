@@ -41,6 +41,7 @@ object MappingParser extends ContentParser[Mappings] {
           val values = (mappingValuesStart until mappingKeysStart+mappingLength).toList
           keys.zip(values)
         }.toMap
+        .withDefault(x => x)
 
     Mappings(
       seeds,
