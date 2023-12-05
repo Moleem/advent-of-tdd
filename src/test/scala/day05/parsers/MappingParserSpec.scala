@@ -38,7 +38,7 @@ object MappingParser extends ContentParser[Mappings] {
         }
         .flatMap { case (mappingValuesStart, mappingKeysStart, mappingLength) =>
           val keys = (mappingKeysStart until mappingKeysStart+mappingLength).toList
-          val values = (mappingValuesStart until mappingKeysStart+mappingLength).toList
+          val values = (mappingValuesStart until mappingValuesStart+mappingLength).toList
           keys.zip(values)
         }.toMap
         .withDefault(x => x)
