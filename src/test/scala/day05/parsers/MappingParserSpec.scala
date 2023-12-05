@@ -16,36 +16,37 @@ case class Mappings(
                    )
 
 object MappingParser extends ContentParser[Mappings] {
-  override def parse(content: String): Mappings = {
 
+  private def parseSeedsLine(contentLine: String): List[Int] =
+    contentLine
+      .split(":")(1)
+      .trim
+      .split(" ")
+      .map(_.trim.toInt)
+      .toList
+
+
+  private def parseMappingBlock(contentBlock: String): Map[Int, Int] =
+    contentBlock
+      .split("\n")
+      .tail
+      .map { line =>
+        val nums = line.split(" ").map(_.trim.toInt)
+        (nums(0), nums(1), nums(2))
+      }
+      .flatMap { case (mappingValuesStart, mappingKeysStart, mappingLength) =>
+        val keys = (mappingKeysStart until mappingKeysStart + mappingLength).toList
+        val values = (mappingValuesStart until mappingValuesStart + mappingLength).toList
+        keys.zip(values)
+      }.toMap
+      .withDefault(x => x)
+
+  override def parse(content: String): Mappings = {
     val contentBlocks = content.split("\n\n")
 
-    val seeds =
-      contentBlocks(0)
-        .split(":")(1)
-        .trim
-        .split(" ")
-        .map(_.trim.toInt)
-        .toList
-
-    val seedToSoilMap =
-      contentBlocks(1)
-        .split("\n")
-        .tail
-        .map { line =>
-          val nums = line.split(" ").map(_.trim.toInt)
-          (nums(0), nums(1), nums(2))
-        }
-        .flatMap { case (mappingValuesStart, mappingKeysStart, mappingLength) =>
-          val keys = (mappingKeysStart until mappingKeysStart+mappingLength).toList
-          val values = (mappingValuesStart until mappingValuesStart+mappingLength).toList
-          keys.zip(values)
-        }.toMap
-        .withDefault(x => x)
-
     Mappings(
-      seeds,
-      seedToSoilMap,
+      parseSeedsLine(contentBlocks(0)),
+      parseMappingBlock(contentBlocks(1)),
       Map.empty,
       Map.empty,
       Map.empty,
