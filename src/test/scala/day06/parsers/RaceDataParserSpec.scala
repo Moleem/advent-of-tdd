@@ -1,27 +1,9 @@
 package day06.parsers
 
+import day06.model.RaceData
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import utils.ContentParser
 
-case class RaceData(length: Long, recordDistance: Long) {
-
-}
-
-object RaceDataParser extends ContentParser[List[RaceData]] {
-  override def parse(content: String): List[RaceData] = {
-    val lines =
-      content.split("\n").toList
-
-    val timeLengths =
-      lines(0).split(":")(1).trim.split(" ").map(_.trim).filter(_.nonEmpty).map(_.toInt)
-
-    val recordDistances =
-      lines(1).split(":")(1).trim.split(" ").map(_.trim).filter(_.nonEmpty).map(_.toInt)
-
-    timeLengths.zip(recordDistances).toList.map { case (length, recordDistance) => RaceData(length, recordDistance)}
-  }
-}
 
 class RaceDataParserSpec extends AnyFlatSpec with Matchers {
 
