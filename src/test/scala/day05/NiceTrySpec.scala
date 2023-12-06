@@ -8,6 +8,7 @@ import utils.{ContentParser, ProblemSolver}
 case class Range(start: Long, end: Long) {
   def contains(n: Long): Boolean = start <= n && n <= end
   def contains(other: Range): Boolean = this.contains(other.start) && this.contains(other.end)
+  def overlaps(other: Range): Boolean = ???
 }
 
 case class Modifier(modifierRange: Range, delta: Long) {
@@ -27,8 +28,8 @@ case class Modifier(modifierRange: Range, delta: Long) {
         Range(modifierRange.start + delta, rangeToBeModified.end + delta)
       )
     else if (rangeToBeModified.contains(modifierRange))
-      Set(Range(
-        rangeToBeModified.start, modifierRange.start - 1),
+      Set(
+        Range(rangeToBeModified.start, modifierRange.start - 1),
         Range(modifierRange.start + delta, modifierRange.end + delta),
         Range(modifierRange.end + 1, rangeToBeModified.end)
       )
@@ -77,7 +78,21 @@ object RangeParser extends ContentParser[Content] {
 }
 
 object MinIndexFinder extends ProblemSolver[Content, Long] {
-  override def solve(input: Content): Long = ???
+  override def solve(input: Content): Long = {
+    input.modifiers
+      .foldLeft(input.relevantInitialRanges) {
+        case (rangesToBeModified, modifiers) =>
+          println(rangesToBeModified)
+          val res = rangesToBeModified
+            .flatMap { rangeToBeModified =>
+
+              val modified = modifiers.flatMap(_.modify(rangeToBeModified))
+              modified
+            }
+          res
+      }.map(_.start)
+      .min
+  }
 }
 
 class NiceTrySpec extends AnyFlatSpec with Matchers {
@@ -226,7 +241,7 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
 
   behavior of "Modifier"
 
-  it should "do nothing with a range, if it doesnt overlap with the modifier" in {
+  it should "yield no result, if it doesnt overlap with the modifier" in {
     val range = Range(0, 5)
     val modifier = Modifier(Range(8, 12), +5)
 
@@ -260,6 +275,37 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
 
     modifier.modify(range) shouldBe Set(Range(0, 1), Range(7, 9), Range(5, 5))
   }
+
+  it should "not identify overlap if there are no shared indexes" in {
+    val range = Range(0, 5)
+
+    range.overlaps(Range(8, 12)) shouldBe false
+  }
+
+  it should "identify overlap if it falls into the modifier's range" in {
+    val range = Range(0, 5)
+
+    range.overlaps(Range(-10, 10)) shouldBe true
+  }
+
+  it should "identify overlap if only it's beginning falls into the modifier's range" in {
+    val range = Range(0, 5)
+
+    range.overlaps(Range(-10, 3)) shouldBe true
+  }
+
+  it should "identify overlap if only it's end falls into the modifier's range" in {
+    val range = Range(0, 5)
+
+    range.overlaps(Range(3, 8)) shouldBe true
+  }
+
+  it should "identify overlap if only it's a superset of the modifier's range" in {
+    val range = Range(0, 5)
+
+    range.overlaps(Range(2, 4)) shouldBe true
+  }
+
 
   behavior of "MinIndexFinder"
 
