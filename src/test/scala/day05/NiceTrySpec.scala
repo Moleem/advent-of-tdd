@@ -2,13 +2,14 @@ package day05
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import utils.ContentParser
+import utils.{ContentParser, ProblemSolver}
 
 
 case class Range(start: Long, end: Long) {
   def contains(n: Long): Boolean = start <= n && n <= end
   def contains(other: Range): Boolean = this.contains(other.start) && this.contains(other.end)
 }
+
 case class Modifier(modifierRange: Range, delta: Long) {
   def modify(rangeToBeModified: Range): Set[Range] = {
     if (modifierRange.contains(rangeToBeModified))
@@ -75,9 +76,12 @@ object RangeParser extends ContentParser[Content] {
   }
 }
 
-
+object MinIndexFinder extends ProblemSolver[Content, Long] {
+  override def solve(input: Content): Long = ???
+}
 
 class NiceTrySpec extends AnyFlatSpec with Matchers {
+
 
   behavior of "RangeParser"
 
@@ -85,33 +89,71 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     val input =
       """seeds: 79 14 55 13
         |
-        |some name map:
+        |seed-to-soil map:
         |50 98 2
         |52 50 48
         |
-        |some other name map:
+        |soil-to-fertilizer map:
         |0 15 37
         |37 52 2
-        |39 0 15""".stripMargin
+        |39 0 15
+        |
+        |fertilizer-to-water map:
+        |49 53 8
+        |0 11 42
+        |42 0 7
+        |57 7 4
+        |
+        |water-to-light map:
+        |88 18 7
+        |18 25 70
+        |
+        |light-to-temperature map:
+        |45 77 23
+        |81 45 19
+        |68 64 13
+        |
+        |temperature-to-humidity map:
+        |0 69 1
+        |1 0 69
+        |
+        |humidity-to-location map:
+        |60 56 37
+        |56 93 4""".stripMargin
 
     RangeParser.parse(input) shouldBe Content(
-      relevantInitialRanges = Set(
-        Range(79, 92),
-        Range(55, 67)
-      ),
-      modifiers = List(
+      Set(Range(79, 92), Range(55, 67)),
+      List(
         Set(
           Modifier(Range(98, 99), -48),
-          Modifier(Range(50, 97), +2)
-        ),
+          Modifier(Range(50, 97), 2)),
         Set(
           Modifier(Range(15, 51), -15),
           Modifier(Range(52, 53), -15),
-          Modifier(Range( 0, 14), +39)
+          Modifier(Range(0, 14), 39)),
+        Set(
+          Modifier(Range(53, 60), -4),
+          Modifier(Range(11, 52), -11),
+          Modifier(Range(0, 6), 42),
+          Modifier(Range(7, 10), 50)),
+        Set(
+          Modifier(Range(18, 24), 70),
+          Modifier(Range(25, 94), -7)),
+        Set(
+          Modifier(Range(77, 99), -32),
+          Modifier(Range(45, 63), 36),
+          Modifier(Range(64, 76), 4)),
+        Set(
+          Modifier(Range(69, 69), -69),
+          Modifier(Range(0, 68), 1)),
+        Set(
+          Modifier(Range(56, 92), 4),
+          Modifier(Range(93, 96), -37)
         )
       )
     )
   }
+
 
   behavior of "Range"
 
@@ -217,5 +259,45 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     val modifier = Modifier(Range(2, 4), +5)
 
     modifier.modify(range) shouldBe Set(Range(0, 1), Range(7, 9), Range(5, 5))
+  }
+
+  behavior of "MinIndexFinder"
+
+  it should "apply modifiers on the initial range and find the lowest index of the output" in {
+
+    val content = Content(
+      Set(Range(79, 92), Range(55, 67)),
+      List(
+        Set(
+          Modifier(Range(98, 99), -48),
+          Modifier(Range(50, 97), 2)),
+        Set(
+          Modifier(Range(15, 51), -15),
+          Modifier(Range(52, 53), -15),
+          Modifier(Range(0, 14), 39)),
+        Set(
+          Modifier(Range(53, 60), -4),
+          Modifier(Range(11, 52), -11),
+          Modifier(Range(0, 6), 42),
+          Modifier(Range(7, 10), 50)),
+        Set(
+          Modifier(Range(18, 24), 70),
+          Modifier(Range(25, 94), -7)),
+        Set(
+          Modifier(Range(77, 99), -32),
+          Modifier(Range(45, 63), 36),
+          Modifier(Range(64, 76), 4)),
+        Set(
+          Modifier(Range(69, 69), -69),
+          Modifier(Range(0, 68), 1)),
+        Set(
+          Modifier(Range(56, 92), 4),
+          Modifier(Range(93, 96), -37)
+        )
+      )
+    )
+
+
+    MinIndexFinder.solve(content) shouldBe 46
   }
 }
