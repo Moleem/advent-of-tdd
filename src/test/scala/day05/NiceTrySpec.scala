@@ -5,7 +5,9 @@ import org.scalatest.matchers.should.Matchers
 import utils.ContentParser
 
 
-case class Range(start: Long, end: Long)
+case class Range(start: Long, end: Long) {
+  def contains(n: Long): Boolean = ???
+}
 case class Modifier(range: Range, delta: Long)
 
 case class Content(relevantInitialRanges: Set[Range], modifiers: List[Set[Modifier]])
@@ -83,6 +85,14 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
         )
       )
     )
+  }
+
+  behavior of "Range"
+
+  it should "be able to tell if a number is in the range" in {
+    val range = Range(0, 5)
+
+    range.contains(3) shouldBe true
   }
 
 }
