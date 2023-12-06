@@ -95,4 +95,28 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     range.contains(3) shouldBe true
   }
 
+  it should "be able to tell if a number is in the range (start inclusive)" in {
+    val range = Range(0, 5)
+
+    range.contains(0) shouldBe true
+  }
+
+  it should "be able to tell if a number is in the range (end inclusive)" in {
+    val range = Range(0, 5)
+
+    range.contains(5) shouldBe true
+  }
+
+  it should "be able to tell if a number is not in the range (below)" in {
+    val range = Range(0, 5)
+
+    range.contains(-1) shouldBe false
+  }
+
+  it should "be able to tell if a number is not in the range (above)" in {
+    val range = Range(0, 5)
+
+    range.contains(6) shouldBe false
+  }
+
 }
