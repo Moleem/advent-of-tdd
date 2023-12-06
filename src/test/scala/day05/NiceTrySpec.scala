@@ -10,8 +10,14 @@ case class Range(start: Long, end: Long) {
   def contains(other: Range): Boolean = this.contains(other.start) && this.contains(other.end)
 }
 case class Modifier(modifierRange: Range, delta: Long) {
-  def modify(rangeToBeModified: Range): Set[Range] =
-    Set(rangeToBeModified)
+  def modify(rangeToBeModified: Range): Set[Range] = {
+    if (modifierRange.contains(rangeToBeModified.start) && modifierRange.contains(rangeToBeModified.end))
+      Set(Range(rangeToBeModified.start + delta, rangeToBeModified.end + delta))
+    else if (!rangeToBeModified.contains(modifierRange.start) && !rangeToBeModified.contains(modifierRange.end))
+      Set(rangeToBeModified)
+    else
+      Set.empty
+  }
 }
 
 case class Content(relevantInitialRanges: Set[Range], modifiers: List[Set[Modifier]])
