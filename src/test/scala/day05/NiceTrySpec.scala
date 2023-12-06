@@ -8,6 +8,7 @@ import utils.ContentParser
 case class Range(start: Long, end: Long) {
   def contains(n: Long): Boolean = start <= n && n <= end
   def contains(other: Range): Boolean = this.contains(other.start) && this.contains(other.end)
+  def splitAt(n: Long): Set[Range] = ???
 }
 case class Modifier(range: Range, delta: Long)
 
@@ -153,6 +154,18 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     val range = Range(0, 5)
 
     range.contains(Range(3, 8)) shouldBe false
+  }
+
+  it should "be splittable" in {
+    val range = Range(0, 5)
+
+    range.splitAt(3) shouldBe Set(Range(0, 3), Range(4, 5))
+  }
+
+  it should "not split if the split number is not in the range" in {
+    val range = Range(0, 5)
+
+    range.splitAt(8) shouldBe Set(range)
   }
 
 }
