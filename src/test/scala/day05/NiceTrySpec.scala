@@ -6,7 +6,8 @@ import utils.ContentParser
 
 
 case class Range(start: Long, end: Long) {
-  def contains(n: Long): Boolean = ???
+  def contains(n: Long): Boolean = start <= n && n <= end
+  def contains(other: Range): Boolean = ???
 }
 case class Modifier(range: Range, delta: Long)
 
@@ -117,6 +118,41 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     val range = Range(0, 5)
 
     range.contains(6) shouldBe false
+  }
+
+  it should "be able to tell if another range is within the range (true subrange)" in {
+    val range = Range(0, 5)
+
+    range.contains(Range(1, 4)) shouldBe true
+  }
+  it should "be able to tell if another range is within the range (equivalence)" in {
+    val range = Range(0, 5)
+
+    range.contains(Range(0, 5)) shouldBe true
+  }
+
+  it should "be able to tell if another range is not within the range (below completely)" in {
+    val range = Range(0, 5)
+
+    range.contains(Range(-5, -1)) shouldBe false
+  }
+
+  it should "be able to tell if another range is not within the range (below starts)" in {
+    val range = Range(0, 5)
+
+    range.contains(Range(-1, 1)) shouldBe false
+  }
+
+  it should "be able to tell if another range is not within the range (above completely)" in {
+    val range = Range(0, 5)
+
+    range.contains(Range(6, 10)) shouldBe false
+  }
+
+  it should "be able to tell if another range is not within the range (above starts)" in {
+    val range = Range(0, 5)
+
+    range.contains(Range(3, 8)) shouldBe false
   }
 
 }
