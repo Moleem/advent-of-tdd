@@ -7,7 +7,7 @@ import utils.ContentParser
 
 case class Range(start: Long, end: Long) {
   def contains(n: Long): Boolean = start <= n && n <= end
-  def contains(other: Range): Boolean = ???
+  def contains(other: Range): Boolean = this.contains(other.start) && this.contains(other.end)
 }
 case class Modifier(range: Range, delta: Long)
 
