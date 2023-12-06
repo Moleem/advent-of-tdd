@@ -19,4 +19,14 @@ class SumRecordBreakingOptionsSpec extends AnyFlatSpec with Matchers{
 
     SumRecordBreakingOptions.solve(input) shouldBe 4
   }
+
+  it should "be able to sum how many ways can we break records in all races" in {
+    val input = List(
+      RaceData(7, 9),
+      RaceData(15, 40),
+      RaceData(30, 200)
+    )
+
+    SumRecordBreakingOptions.solve(input) shouldBe 288 // 4 * 8 * 9
+  }
 }
