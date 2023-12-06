@@ -8,9 +8,10 @@ import utils.ContentParser
 case class Range(start: Long, end: Long) {
   def contains(n: Long): Boolean = start <= n && n <= end
   def contains(other: Range): Boolean = this.contains(other.start) && this.contains(other.end)
-  def splitAt(n: Long): Set[Range] = ???
 }
-case class Modifier(range: Range, delta: Long)
+case class Modifier(range: Range, delta: Long) {
+  def modify(r: Range): Range = ???
+}
 
 case class Content(relevantInitialRanges: Set[Range], modifiers: List[Set[Modifier]])
 
@@ -126,6 +127,7 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
 
     range.contains(Range(1, 4)) shouldBe true
   }
+
   it should "be able to tell if another range is within the range (equivalence)" in {
     val range = Range(0, 5)
 
@@ -156,16 +158,41 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     range.contains(Range(3, 8)) shouldBe false
   }
 
-  it should "be splittable" in {
-    val range = Range(0, 5)
 
-    range.splitAt(3) shouldBe Set(Range(0, 3), Range(4, 5))
+  behavior of "Modifier"
+
+  it should "do nothing with a range, if it doesnt overlap with the modifier" in {
+    val range = Range(0, 5)
+    val modifier = Modifier(Range(8, 12), +5)
+
+    modifier.modify(range) shouldBe Set(range)
   }
 
-  it should "not split if the split number is not in the range" in {
+  it should "modify the whole range, if it falls into the modifier's range" in {
     val range = Range(0, 5)
+    val modifier = Modifier(Range(-10, 10), +5)
 
-    range.splitAt(8) shouldBe Set(range)
+    modifier.modify(range) shouldBe Set(Range(5, 10))
   }
 
+  it should "split the range and modify part of it, if only it's beginning falls into the modifier's range" in {
+    val range = Range(0, 5)
+    val modifier = Modifier(Range(-10, 3), +5)
+
+    modifier.modify(range) shouldBe Set(Range(5, 8), Range(4, 5))
+  }
+
+  it should "split the range and modify part of it, if only it's end falls into the modifier's range" in {
+    val range = Range(0, 5)
+    val modifier = Modifier(Range(3, 8), +5)
+
+    modifier.modify(range) shouldBe Set(Range(0, 2), Range(8, 10))
+  }
+
+  it should "split the range and modify part of it, if only it's a superset of the modifier's range" in {
+    val range = Range(0, 5)
+    val modifier = Modifier(Range(2, 4), +5)
+
+    modifier.modify(range) shouldBe Set(Range(0, 1), Range(7, 9), Range(5, 5))
+  }
 }
