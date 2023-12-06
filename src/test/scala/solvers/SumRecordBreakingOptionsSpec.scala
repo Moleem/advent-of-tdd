@@ -6,7 +6,10 @@ import org.scalatest.matchers.should.Matchers
 import utils.ProblemSolver
 
 object SumRecordBreakingOptions extends ProblemSolver[List[RaceData], Long] {
-  override def solve(input: List[RaceData]): Long = ???
+  override def solve(input: List[RaceData]): Long =
+    (0 to input(0).length).count( pressTime =>
+      pressTime * (input(0).length-pressTime) < input(0).recordDistance
+    )
 }
 
 class SumRecordBreakingOptionsSpec extends AnyFlatSpec with Matchers{
