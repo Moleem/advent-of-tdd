@@ -2,7 +2,7 @@ package day06
 
 import day00.parsers._
 import day00.solvers._
-import day06.parsers.RaceDataParser
+import day06.parsers.{BadKerningRaceDataParser, RaceDataParser}
 import day06.solvers.SumRecordBreakingOptions
 import utils.PrintSolution
 
@@ -16,10 +16,10 @@ object Runner extends App {
     problemSolver = SumRecordBreakingOptions
   )
 
-//  PrintSolution(
-//    inputFileName = s"/$dayNum/input-2.txt",
-//    contentParser = DummyTask2Parser,
-//    problemSolver = DummyTask2Solver
-//  )
+  PrintSolution(
+    inputFileName = s"/$dayNum/input-2.txt",
+    contentParser = BadKerningRaceDataParser,
+    problemSolver = SumRecordBreakingOptions
+  )
 
 }
