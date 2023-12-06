@@ -11,12 +11,26 @@ case class Range(start: Long, end: Long) {
 }
 case class Modifier(modifierRange: Range, delta: Long) {
   def modify(rangeToBeModified: Range): Set[Range] = {
-    if (modifierRange.contains(rangeToBeModified.start) && modifierRange.contains(rangeToBeModified.end))
-      Set(Range(rangeToBeModified.start + delta, rangeToBeModified.end + delta))
+    if (modifierRange.contains(rangeToBeModified))
+      Set(
+        Range(rangeToBeModified.start + delta, rangeToBeModified.end + delta)
+      )
     else if (modifierRange.contains(rangeToBeModified.start))
-      Set(Range(rangeToBeModified.start + delta, modifierRange.end + delta), Range(modifierRange.end + 1, rangeToBeModified.end))
+      Set(
+        Range(rangeToBeModified.start + delta, modifierRange.end + delta),
+        Range(modifierRange.end + 1, rangeToBeModified.end)
+      )
     else if (modifierRange.contains(rangeToBeModified.end))
-      Set(Range(rangeToBeModified.start, modifierRange.start-1), Range(modifierRange.start+delta, rangeToBeModified.end+delta))
+      Set(
+        Range(rangeToBeModified.start, modifierRange.start - 1),
+        Range(modifierRange.start + delta, rangeToBeModified.end + delta)
+      )
+    else if (rangeToBeModified.contains(modifierRange))
+      Set(Range(
+        rangeToBeModified.start, modifierRange.start - 1),
+        Range(modifierRange.start + delta, modifierRange.end + delta),
+        Range(modifierRange.end + 1, rangeToBeModified.end)
+      )
     else
       Set(rangeToBeModified)
   }
