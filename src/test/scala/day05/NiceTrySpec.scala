@@ -13,6 +13,8 @@ case class Modifier(modifierRange: Range, delta: Long) {
   def modify(rangeToBeModified: Range): Set[Range] = {
     if (modifierRange.contains(rangeToBeModified.start) && modifierRange.contains(rangeToBeModified.end))
       Set(Range(rangeToBeModified.start + delta, rangeToBeModified.end + delta))
+    else if (modifierRange.contains(rangeToBeModified.start))
+      Set(Range(rangeToBeModified.start + delta, modifierRange.end + delta), Range(modifierRange.end+1, rangeToBeModified.end))
     else if (!rangeToBeModified.contains(modifierRange.start) && !rangeToBeModified.contains(modifierRange.end))
       Set(rangeToBeModified)
     else
