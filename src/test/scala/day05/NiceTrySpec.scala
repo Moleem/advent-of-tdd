@@ -8,10 +8,43 @@ import utils.ContentParser
 case class Range(start: Long, end: Long)
 case class Modifier(range: Range, delta: Long)
 
-case class Content(relevantInitialRanges: Set[Range], modifiers: List[List[Modifier]])
+case class Content(relevantInitialRanges: Set[Range], modifiers: List[Set[Modifier]])
 
 object RangeParser extends ContentParser[Content] {
-  override def parse(content: String): Content = ???
+
+  private def parseRelevantInitialRanges(line: String): Set[Range] = {
+    val numbers = line.split(":")(1).split(" ").filterNot(_.isEmpty).map(_.toLong)
+    val starts = numbers.zipWithIndex.filter(_._2 % 2 == 0).map(_._1)
+    val lengths = numbers.zipWithIndex.filter(_._2 % 2 == 1).map(_._1)
+
+    starts.zip(lengths).map { case (start, length) =>
+      Range(start, start + length - 1)
+    }.toSet
+  }
+
+  private def parseModifier(line: String): Modifier = {
+    val parts = line.split(" ")
+    val start = parts(1).toLong
+    val length = parts(2).toLong
+    val end = start + length - 1
+    val delta = parts(0).toLong - start
+
+    Modifier(Range(start, end), delta)
+  }
+
+  private def parseModifiers(lines: String): Set[Modifier] = {
+    val nonHeaderLines = lines.split("\n").tail
+
+    nonHeaderLines.map(parseModifier).toSet
+  }
+
+  override def parse(content: String): Content = {
+    val parts = content.split("\n\n")
+    val relevantInitialRanges = parseRelevantInitialRanges(parts.head)
+    val modifiers = parts.tail.map(parseModifiers).toList
+
+    Content(relevantInitialRanges, modifiers)
+  }
 }
 
 
@@ -39,18 +72,17 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
         Range(55, 67)
       ),
       modifiers = List(
-        List(
+        Set(
           Modifier(Range(98, 99), -48),
           Modifier(Range(50, 97), +2)
         ),
-        List(
+        Set(
           Modifier(Range(15, 51), -15),
-          Modifier(Range(52, 53), +15),
+          Modifier(Range(52, 53), -15),
           Modifier(Range( 0, 14), +39)
         )
       )
     )
-
   }
 
 }
