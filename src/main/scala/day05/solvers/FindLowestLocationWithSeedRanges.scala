@@ -11,24 +11,42 @@ object FindLowestLocationWithSeedRanges extends ProblemSolver[Mappings, Long] {
       .getOrElse(0L)
 
   override def solve(input: Mappings): Long = {
-    input
-      .seeds
-      .foldLeft(List.empty[List[Long]]) { case (accumulator, num) =>
-        if (accumulator.isEmpty) {
-          List(List(num))
-        } else if (accumulator.lastOption.exists(_.length == 1)) {
-          accumulator.init :+ (accumulator.last.head to accumulator.last.head + num).toList
-        } else {
-          accumulator.init :+ List(num)
+    val seedRanges = {
+      input.seeds.zipWithIndex.filter(_._2 % 2 == 0).map(_._1)
+      .zip(
+        input.seeds.zipWithIndex.filter(_._2 % 2 != 0).map(_._1)
+      ).map { case(start, length) => (start, start+length-1) }
+    }
+
+    var lowestEndValue = Long.MaxValue
+
+    val seedRangesLen = seedRanges.size
+
+    seedRanges.zipWithIndex.foreach { case (seedRange, index) =>
+      println(s"Processing seed range $index/$seedRangesLen")
+      val min = seedRange._1
+      val max = seedRange._2
+
+      var i = min
+      while (i <= max) {
+        val endValue =
+          findIn(input.humidityToLocationMap)(
+            findIn(input.temperatureToHumidityMap)(
+              findIn(input.lightToTemperatureMap)(
+                findIn(input.waterToLightMap)(
+                  findIn(input.fertilizerToWaterMap)(
+                    findIn(input.soilToFertilizerMap)(
+                      findIn(input.seedToSoilMap)(i)
+                    ))))))
+
+        if (endValue < lowestEndValue) {
+          lowestEndValue = endValue
         }
-      }.flatten
-      .map(findIn(input.seedToSoilMap))
-      .map(findIn(input.soilToFertilizerMap))
-      .map(findIn(input.fertilizerToWaterMap))
-      .map(findIn(input.waterToLightMap))
-      .map(findIn(input.lightToTemperatureMap))
-      .map(findIn(input.temperatureToHumidityMap))
-      .map(findIn(input.humidityToLocationMap))
-      .min
+
+        i += 1
+      }
+    }
+
+    lowestEndValue
   }
 }

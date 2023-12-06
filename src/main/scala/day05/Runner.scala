@@ -1,7 +1,7 @@
 package day05
 
 import day05.parsers.MappingParser
-import day05.solvers.FindLowestLocation
+import day05.solvers.{FindLowestLocation, FindLowestLocationWithSeedRanges}
 import utils.PrintSolution
 
 object Runner extends App {
@@ -14,10 +14,10 @@ object Runner extends App {
     problemSolver = FindLowestLocation
   )
 
-//  PrintSolution(
-//    inputFileName = s"/$dayNum/input-2.txt",
-//    contentParser = DummyTask2Parser,
-//    problemSolver = DummyTask2Solver
-//  )
+  PrintSolution(
+    inputFileName = s"/$dayNum/input-2.txt",
+    contentParser = MappingParser,
+    problemSolver = FindLowestLocationWithSeedRanges
+  )
 
 }
