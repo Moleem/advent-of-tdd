@@ -14,11 +14,11 @@ case class Modifier(modifierRange: Range, delta: Long) {
     if (modifierRange.contains(rangeToBeModified.start) && modifierRange.contains(rangeToBeModified.end))
       Set(Range(rangeToBeModified.start + delta, rangeToBeModified.end + delta))
     else if (modifierRange.contains(rangeToBeModified.start))
-      Set(Range(rangeToBeModified.start + delta, modifierRange.end + delta), Range(modifierRange.end+1, rangeToBeModified.end))
-    else if (!rangeToBeModified.contains(modifierRange.start) && !rangeToBeModified.contains(modifierRange.end))
-      Set(rangeToBeModified)
+      Set(Range(rangeToBeModified.start + delta, modifierRange.end + delta), Range(modifierRange.end + 1, rangeToBeModified.end))
+    else if (modifierRange.contains(rangeToBeModified.end))
+      Set(Range(rangeToBeModified.start, modifierRange.start-1), Range(modifierRange.start+delta, rangeToBeModified.end+delta))
     else
-      Set.empty
+      Set(rangeToBeModified)
   }
 }
 
