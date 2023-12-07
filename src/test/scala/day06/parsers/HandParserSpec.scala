@@ -5,7 +5,7 @@ import org.scalatest.matchers.should.Matchers
 
 sealed trait Card {
   val strength: Int
-  def compareTo(other: Card): Int = ???
+  def compare(other: Card): Int = Integer.compare(this.strength, other.strength)
 }
 
 case object C_A extends Card {override val strength: Int = 13 }
@@ -28,18 +28,18 @@ class CardSpec extends AnyFlatSpec with Matchers {
   behavior of "Card"
 
   it should "have a defined order" in {
-    C_A compareTo C_K shouldBe 1
-    C_K compareTo C_Q shouldBe 1
-    C_Q compareTo C_J shouldBe 1
-    C_J compareTo C_T shouldBe 1
-    C_T compareTo C_9 shouldBe 1
-    C_9 compareTo C_8 shouldBe 1
-    C_8 compareTo C_7 shouldBe 1
-    C_7 compareTo C_6 shouldBe 1
-    C_6 compareTo C_5 shouldBe 1
-    C_5 compareTo C_4 shouldBe 1
-    C_4 compareTo C_3 shouldBe 1
-    C_3 compareTo C_2 shouldBe 1
+    C_A compare C_K shouldBe 1
+    C_K compare C_Q shouldBe 1
+    C_Q compare C_J shouldBe 1
+    C_J compare C_T shouldBe 1
+    C_T compare C_9 shouldBe 1
+    C_9 compare C_8 shouldBe 1
+    C_8 compare C_7 shouldBe 1
+    C_7 compare C_6 shouldBe 1
+    C_6 compare C_5 shouldBe 1
+    C_5 compare C_4 shouldBe 1
+    C_4 compare C_3 shouldBe 1
+    C_3 compare C_2 shouldBe 1
   }
 }
 
