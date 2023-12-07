@@ -22,7 +22,10 @@ case object C_4 extends Card { override val strength: Int = 3 }
 case object C_3 extends Card { override val strength: Int = 2 }
 case object C_2 extends Card { override val strength: Int = 1 }
 
-case class Hand(cards: List[Card])
+case class Hand(cards: List[Card]) {
+  def compare(other: Hand): Int = ???
+}
+
 object Hand {
   def apply(s: String): Hand =
     Hand(
@@ -79,17 +82,17 @@ class HandSpec extends AnyFlatSpec with Matchers {
     Hand("AKQJT98765432") shouldBe Hand(List(C_A, C_K, C_Q, C_J, C_T, C_9, C_8, C_7, C_6, C_5, C_4, C_3, C_2))
   }
 
-//  it should "five of a kind should beat four of a kind" in {
-//    Hand(List(C_A, C_A, C_A, C_A, C_A)) compare Hand(List(C_A, C_A, C_8, C_A, C_A)) shouldBe 1
-//  }
-//
-//  it should "four of a kind should beat full house" in {
-//    Hand(List(C_A, C_A, C_8, C_A, C_A)) compare Hand(List(C_2, C_3, C_3, C_3, C_2)) shouldBe 1
-//  }
-//
-//  it should "four of a kind should beat full house" in {
-//    Hand(List(C_A, C_A, C_8, C_A, C_A)) compare Hand(List(C_2, C_3, C_3, C_3, C_2)) shouldBe 1
-//  }
+  it should "have a defined order" in {
+    Hand("AAAAA") compare Hand("AA8AA") shouldBe 1
+    Hand("AA8AA") compare Hand("23332") shouldBe 1
+    Hand("23332") compare Hand("TTT98") shouldBe 1
+    Hand("TTT98") compare Hand("23432") shouldBe 1
+    Hand("23432") compare Hand("A23A4") shouldBe 1
+    Hand("A23A4") compare Hand("23456") shouldBe 1
+
+    Hand("AAAAA") compare Hand("BBBBB") shouldBe 1
+    Hand("AAAA8") compare Hand("AAAA7") shouldBe 1
+  }
 }
 
 
