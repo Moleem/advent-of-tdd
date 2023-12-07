@@ -27,12 +27,7 @@ case class ModificationResult(modifiedSubRanges: Set[Range], unmodifiedSubRanges
 case class Modifier(modifierRange: Range, delta: Long) {
 
   def modify(rangesToBeModified: Set[Range]): ModificationResult =
-    rangesToBeModified.map(this.modify).foldLeft(ModificationResult(Set(), Set())) { case (prevModRes, nextModRes) =>
-      ModificationResult(
-        modifiedSubRanges = prevModRes.modifiedSubRanges ++ nextModRes.modifiedSubRanges,
-        unmodifiedSubRanges = prevModRes.unmodifiedSubRanges ++ nextModRes.unmodifiedSubRanges
-      )
-    }
+    rangesToBeModified.map(this.modify).foldLeft(ModificationResult(Set(), Set()))(_ merge _)
 
   def modify(rangeToBeModified: Range): ModificationResult = {
     if (modifierRange.contains(rangeToBeModified))
