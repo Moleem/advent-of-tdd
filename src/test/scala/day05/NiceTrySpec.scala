@@ -36,20 +36,14 @@ case class Modifier(scope: Range, delta: Long) {
 
   private def modifyTheWhole(range: Range): ModificationResult =
     ModificationResult(
-      changed = Set(
-        Range(range.start+delta, range.end+delta)
-      ),
+      changed = Set(Range(range.start+delta, range.end+delta)),
       unchanged = Set()
     )
 
   private def modifyUntil(until: Long)(range: Range): ModificationResult =
     ModificationResult(
-      changed = Set(
-        Range(range.start + delta, until + delta)
-      ),
-      unchanged = Set(
-        Range(until + 1, range.end)
-      )
+      changed = Set(Range(range.start + delta, until + delta)),
+      unchanged = Set(Range(until + 1, range.end))
     )
 
   private def modifyFrom(from: Long)(range: Range): ModificationResult =
@@ -61,13 +55,8 @@ case class Modifier(scope: Range, delta: Long) {
 
   private def modifyBetween(from: Long, until: Long)(range: Range): ModificationResult =
     ModificationResult(
-      changed = Set(
-        Range(from + delta, until + delta)
-      ),
-      unchanged = Set(
-        Range(range.start, from - 1),
-        Range(until + 1, range.end)
-      )
+      changed = Set(Range(from + delta, until + delta)),
+      unchanged = Set(Range(range.start, from - 1), Range(until + 1, range.end))
     )
 
   private def doNotModify(range: Range): ModificationResult =
