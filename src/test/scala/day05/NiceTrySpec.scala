@@ -126,20 +126,15 @@ object RangeParser extends ContentParser[Content] {
 }
 
 object MinIndexFinder extends ProblemSolver[Content, Long] {
+
   override def solve(input: Content): Long = {
     input
       .modifiers
       .foldLeft(input.relevantInitialRanges) {
-        case (rangesToBeModified, modifiers) =>
-          val initial = ModificationResult(
-            changed = Set(),
-            unchanged = rangesToBeModified
-          )
-
-          modifiers.foldLeft(initial) { case (prev, next) =>
-            next
-              .modify(prev.unchanged)
-              .withChanges(prev.changed)
+        case (subjects, modifiers) =>
+          modifiers.foldLeft(ModificationResult(Set(), unchanged = subjects)) {
+            case (prev, next) =>
+              next.modify(prev.unchanged).withChanges(prev.changed)
           }.ranges
       }.map(_.start)
       .min
