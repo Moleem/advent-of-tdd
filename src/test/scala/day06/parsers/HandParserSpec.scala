@@ -24,7 +24,25 @@ case object C_2 extends Card { override val strength: Int = 1 }
 
 case class Hand(cards: List[Card])
 object Hand {
-  def apply(s: String): Hand = ???
+  def apply(s: String): Hand =
+    Hand(
+      s.toList
+        .map {
+          case 'A' => C_A
+          case 'K' => C_K
+          case 'Q' => C_Q
+          case 'J' => C_J
+          case 'T' => C_T
+          case '9' => C_9
+          case '8' => C_8
+          case '7' => C_7
+          case '6' => C_6
+          case '5' => C_5
+          case '4' => C_4
+          case '3' => C_3
+          case '2' => C_2
+        }
+    )
 }
 
 class CardSpec extends AnyFlatSpec with Matchers {
@@ -58,7 +76,7 @@ class HandSpec extends AnyFlatSpec with Matchers {
   //High card, where all cards' labels are distinct: 23456
 
   it should "be constructable from string" in {
-    Hand("AKQJT98765432") shouldBe Hand(List(C_A, C_K, C_Q, C_J, C_T, C_9, C_8, C_7, C_6, C_5, C_4, C_3))
+    Hand("AKQJT98765432") shouldBe Hand(List(C_A, C_K, C_Q, C_J, C_T, C_9, C_8, C_7, C_6, C_5, C_4, C_3, C_2))
   }
 
 //  it should "five of a kind should beat four of a kind" in {
