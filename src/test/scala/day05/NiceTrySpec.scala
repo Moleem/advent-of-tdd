@@ -16,6 +16,7 @@ case class Range(start: Long, end: Long) {
 }
 
 case class ModificationResult(changed: Set[Range], unchanged: Set[Range]) {
+
   def merge(other: ModificationResult): ModificationResult =
     ModificationResult(
       changed = this.changed ++ other.changed,
@@ -24,13 +25,15 @@ case class ModificationResult(changed: Set[Range], unchanged: Set[Range]) {
 
 }
 
-case class Modifier(modifierRange: Range, delta: Long) {
+case class Modifier(scope: Range, delta: Long) {
 
-  def modify(rangesToBeModified: Set[Range]): ModificationResult =
-    rangesToBeModified.map(this.modify).foldLeft(ModificationResult(Set(), Set()))(_ merge _)
+  def modify(subjects: Set[Range]): ModificationResult =
+    subjects
+      .map(modify)
+      .foldLeft(ModificationResult(Set(), Set()))(_ merge _)
 
   def modify(rangeToBeModified: Range): ModificationResult = {
-    if (modifierRange.contains(rangeToBeModified))
+    if (scope.contains(rangeToBeModified))
       ModificationResult(
         changed = Set(
           Range(rangeToBeModified.start + delta, rangeToBeModified.end + delta)
@@ -38,32 +41,32 @@ case class Modifier(modifierRange: Range, delta: Long) {
         unchanged = Set()
       )
 
-    else if (modifierRange.contains(rangeToBeModified.start)) {
+    else if (scope.contains(rangeToBeModified.start)) {
       ModificationResult(
         changed = Set(
-          Range(rangeToBeModified.start + delta, modifierRange.end + delta)
+          Range(rangeToBeModified.start + delta, scope.end + delta)
         ),
         unchanged = Set(
-          Range(modifierRange.end + 1, rangeToBeModified.end)
+          Range(scope.end + 1, rangeToBeModified.end)
         )
       )
-    } else if (modifierRange.contains(rangeToBeModified.end))
+    } else if (scope.contains(rangeToBeModified.end))
       ModificationResult(
         changed = Set(
-          Range(modifierRange.start + delta, rangeToBeModified.end + delta)
+          Range(scope.start + delta, rangeToBeModified.end + delta)
         ),
         unchanged = Set(
-          Range(rangeToBeModified.start, modifierRange.start - 1)
+          Range(rangeToBeModified.start, scope.start - 1)
         )
       )
-    else if (rangeToBeModified.contains(modifierRange))
+    else if (rangeToBeModified.contains(scope))
       ModificationResult(
         changed = Set(
-          Range(modifierRange.start + delta, modifierRange.end + delta)
+          Range(scope.start + delta, scope.end + delta)
         ),
         unchanged = Set(
-          Range(rangeToBeModified.start, modifierRange.start - 1),
-          Range(modifierRange.end + 1, rangeToBeModified.end)
+          Range(rangeToBeModified.start, scope.start - 1),
+          Range(scope.end + 1, rangeToBeModified.end)
         )
       )
     else
