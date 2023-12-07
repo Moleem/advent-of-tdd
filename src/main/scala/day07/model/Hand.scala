@@ -1,6 +1,7 @@
 package day07.model
 
 case class Hand(cards: List[Card]) extends Ordered[Hand] {
+
   private val counts: List[Int] = cards.groupBy(_.strength).values.map(_.size).toList.sorted.reverse
 
   private val handRanks = Map(
@@ -22,6 +23,9 @@ case class Hand(cards: List[Card]) extends Ordered[Hand] {
         .find(_ != 0)
         .getOrElse(0)
   }
+
+  def compareWithJoker(hand: Hand): Int = ???
+
 }
 
 object Hand {

@@ -22,4 +22,11 @@ class HandSpec extends AnyFlatSpec with Matchers {
     Hand("AAAAA") compare Hand("KKKKK") shouldBe 1
     Hand("AAAA8") compare Hand("AAAA7") shouldBe 1
   }
+
+  it should "have a defined order (joker aware)" in {
+     Hand("KTJJT") compareWithJoker Hand("QQQJA") shouldBe 1
+     Hand("QQQJA") compareWithJoker Hand("T55J5") shouldBe 1
+     Hand("T55J5") compareWithJoker Hand("KK677") shouldBe 1
+     Hand("KK677") compareWithJoker Hand("32T3K") shouldBe 1
+  }
 }
