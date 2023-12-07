@@ -18,8 +18,8 @@ case class JokerAwareHand(cards: List[JokerAwareCard]) extends Ordered[JokerAwar
   )
 
   def compare(other: JokerAwareHand): Int = {
-    val thisCountsWithJoker = this.countsWithoutJokers.head + jokerCount :: this.countsWithoutJokers.tail
-    val otherCountsWithJoker = other.countsWithoutJokers.head + jokerCount :: other.countsWithoutJokers.tail
+    val thisCountsWithJoker = this.countsWithoutJokers.head + this.jokerCount :: this.countsWithoutJokers.tail
+    val otherCountsWithJoker = other.countsWithoutJokers.head + other.jokerCount :: other.countsWithoutJokers.tail
 
     val handStrengthComparison = Integer.compare(handRanks(thisCountsWithJoker), handRanks(otherCountsWithJoker))
     if (handStrengthComparison != 0) handStrengthComparison
