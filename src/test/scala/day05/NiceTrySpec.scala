@@ -16,7 +16,10 @@ case class Range(start: Long, end: Long) {
 
 case class ModificationResult(changed: Set[Range], unchanged: Set[Range]) {
 
-  def withChanges(changes: Set[Range]): ModificationResult = ???
+  def withChanges(changes: Set[Range]): ModificationResult =
+    this.copy(
+      changed = this.changed ++ changes
+    )
 
   def merge(other: ModificationResult): ModificationResult =
     ModificationResult(
