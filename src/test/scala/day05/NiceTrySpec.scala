@@ -25,12 +25,19 @@ case class ModificationResult(changed: Set[Range], unchanged: Set[Range]) {
 
 }
 
+object ModificationResult {
+
+  def empty: ModificationResult = ModificationResult(Set.empty, Set.empty)
+
+}
+
+
 case class Modifier(scope: Range, delta: Long) {
 
   def modify(subjects: Set[Range]): ModificationResult =
     subjects
       .map(modify)
-      .foldLeft(ModificationResult(Set(), Set()))(_ merge _)
+      .foldLeft(ModificationResult.empty)(_ merge _)
 
   def modify(rangeToBeModified: Range): ModificationResult = {
     if (scope.contains(rangeToBeModified))
@@ -356,6 +363,10 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
 
   behavior of "ModificationResult"
 
+  it should "have an empty factory" in {
+    ModificationResult.empty shouldBe ModificationResult(Set(), Set())
+  }
+
   it should "be able to completely merge with an other modification result" in {
     val modificationResultA = ModificationResult(
       changed = Set(Range(0, 1)),
@@ -376,6 +387,7 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
 
     modificationResultA.merge(modificationResultB) shouldBe expectedModificationResult
   }
+
 
   behavior of "MinIndexFinder"
 
