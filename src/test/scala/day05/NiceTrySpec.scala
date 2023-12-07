@@ -15,11 +15,11 @@ case class Range(start: Long, end: Long) {
 
 }
 
-case class ModificationResult(modifiedSubRanges: Set[Range], unmodifiedSubRanges: Set[Range]) {
+case class ModificationResult(changed: Set[Range], unchanged: Set[Range]) {
   def merge(other: ModificationResult): ModificationResult =
     ModificationResult(
-      modifiedSubRanges = this.modifiedSubRanges ++ other.modifiedSubRanges,
-      unmodifiedSubRanges = this.unmodifiedSubRanges ++ other.unmodifiedSubRanges
+      changed = this.changed ++ other.changed,
+      unchanged = this.unchanged ++ other.unchanged
     )
 
 }
@@ -32,44 +32,44 @@ case class Modifier(modifierRange: Range, delta: Long) {
   def modify(rangeToBeModified: Range): ModificationResult = {
     if (modifierRange.contains(rangeToBeModified))
       ModificationResult(
-        modifiedSubRanges = Set(
+        changed = Set(
           Range(rangeToBeModified.start + delta, rangeToBeModified.end + delta)
         ),
-        unmodifiedSubRanges = Set()
+        unchanged = Set()
       )
 
     else if (modifierRange.contains(rangeToBeModified.start)) {
       ModificationResult(
-        modifiedSubRanges = Set(
+        changed = Set(
           Range(rangeToBeModified.start + delta, modifierRange.end + delta)
         ),
-        unmodifiedSubRanges = Set(
+        unchanged = Set(
           Range(modifierRange.end + 1, rangeToBeModified.end)
         )
       )
     } else if (modifierRange.contains(rangeToBeModified.end))
       ModificationResult(
-        modifiedSubRanges = Set(
+        changed = Set(
           Range(modifierRange.start + delta, rangeToBeModified.end + delta)
         ),
-        unmodifiedSubRanges = Set(
+        unchanged = Set(
           Range(rangeToBeModified.start, modifierRange.start - 1)
         )
       )
     else if (rangeToBeModified.contains(modifierRange))
       ModificationResult(
-        modifiedSubRanges = Set(
+        changed = Set(
           Range(modifierRange.start + delta, modifierRange.end + delta)
         ),
-        unmodifiedSubRanges = Set(
+        unchanged = Set(
           Range(rangeToBeModified.start, modifierRange.start - 1),
           Range(modifierRange.end + 1, rangeToBeModified.end)
         )
       )
     else
       ModificationResult(
-        modifiedSubRanges = Set(),
-        unmodifiedSubRanges = Set(rangeToBeModified)
+        changed = Set(),
+        unchanged = Set(rangeToBeModified)
       )
   }
 }
@@ -119,21 +119,21 @@ object MinIndexFinder extends ProblemSolver[Content, Long] {
       .foldLeft(input.relevantInitialRanges) {
         case (rangesToBeModified, modifiers) =>
           val initialModificationResult = ModificationResult(
-            modifiedSubRanges = Set(),
-            unmodifiedSubRanges = rangesToBeModified
+            changed = Set(),
+            unchanged = rangesToBeModified
           )
 
           val modificationResult = modifiers.foldLeft(initialModificationResult) { case (previousModificationResult, nextModifier) =>
             val newModificationResults =
-              nextModifier.modify(previousModificationResult.unmodifiedSubRanges)
+              nextModifier.modify(previousModificationResult.unchanged)
 
             ModificationResult(
-              modifiedSubRanges = previousModificationResult.modifiedSubRanges ++ newModificationResults.modifiedSubRanges,
-              unmodifiedSubRanges = newModificationResults.unmodifiedSubRanges
+              changed = previousModificationResult.changed ++ newModificationResults.changed,
+              unchanged = newModificationResults.unchanged
             )
           }
 
-          modificationResult.modifiedSubRanges ++ modificationResult.unmodifiedSubRanges
+          modificationResult.changed ++ modificationResult.unchanged
       }.map(_.start)
       .min
   }
@@ -290,8 +290,8 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     val modifier = Modifier(Range(8, 12), +5)
 
     modifier.modify(range) shouldBe ModificationResult(
-      modifiedSubRanges = Set(),
-      unmodifiedSubRanges = Set(Range(0, 5))
+      changed = Set(),
+      unchanged = Set(Range(0, 5))
     )
   }
 
@@ -300,8 +300,8 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     val modifier = Modifier(Range(-10, 10), +5)
 
     modifier.modify(range) shouldBe ModificationResult(
-      modifiedSubRanges = Set(Range(5, 10)),
-      unmodifiedSubRanges = Set()
+      changed = Set(Range(5, 10)),
+      unchanged = Set()
     )
   }
 
@@ -310,8 +310,8 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     val modifier = Modifier(Range(-10, 3), +5)
 
     modifier.modify(range) shouldBe ModificationResult(
-      modifiedSubRanges = Set(Range(5, 8)),
-      unmodifiedSubRanges = Set(Range(4, 5))
+      changed = Set(Range(5, 8)),
+      unchanged = Set(Range(4, 5))
     )
   }
 
@@ -320,8 +320,8 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     val modifier = Modifier(Range(3, 8), +5)
 
     modifier.modify(range) shouldBe ModificationResult(
-      modifiedSubRanges = Set(Range(8, 10)),
-      unmodifiedSubRanges = Set(Range(0, 2))
+      changed = Set(Range(8, 10)),
+      unchanged = Set(Range(0, 2))
     )
   }
 
@@ -330,8 +330,8 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     val modifier = Modifier(Range(2, 4), +5)
 
     modifier.modify(range) shouldBe ModificationResult(
-      modifiedSubRanges = Set(Range(7, 9)),
-      unmodifiedSubRanges = Set(Range(0, 1), Range(5, 5))
+      changed = Set(Range(7, 9)),
+      unchanged = Set(Range(0, 1), Range(5, 5))
     )
   }
 
@@ -340,10 +340,10 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     val modifier = Modifier(Range(3, 13), +20)
 
     modifier.modify(ranges) shouldBe ModificationResult(
-      modifiedSubRanges = Set(
+      changed = Set(
         Range(23, 25),
         Range(30, 33)
-      ), unmodifiedSubRanges = Set(
+      ), unchanged = Set(
         Range(0, 2),
         Range(14, 15)
       )
@@ -355,18 +355,18 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
 
   it should "be able to completely merge with an other modification result" in {
     val modificationResultA = ModificationResult(
-      modifiedSubRanges = Set(Range(0, 1)),
-      unmodifiedSubRanges = Set(Range(4, 5))
+      changed = Set(Range(0, 1)),
+      unchanged = Set(Range(4, 5))
     )
     val modificationResultB = ModificationResult(
-      modifiedSubRanges = Set(Range(2, 3)),
-      unmodifiedSubRanges = Set(Range(6, 7))
+      changed = Set(Range(2, 3)),
+      unchanged = Set(Range(6, 7))
     )
 
     val expectedModificationResult = ModificationResult(
-      modifiedSubRanges = Set(
+      changed = Set(
         Range(0, 1), Range(2, 3)
-      ), unmodifiedSubRanges = Set(
+      ), unchanged = Set(
         Range(4, 5), Range(6, 7)
       )
     )
