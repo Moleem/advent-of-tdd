@@ -15,7 +15,10 @@ case class Range(start: Long, end: Long) {
 
 }
 
-case class ModificationResult(modifiedSubRanges: Set[Range], unmodifiedSubRanges: Set[Range])
+case class ModificationResult(modifiedSubRanges: Set[Range], unmodifiedSubRanges: Set[Range]) {
+  def merge(other: ModificationResult): ModificationResult = ???
+
+}
 
 case class Modifier(modifierRange: Range, delta: Long) {
 
@@ -348,6 +351,29 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     )
   }
 
+
+  behavior of "ModificationResult"
+
+  it should "be able to completely merge with an other modification result" in {
+    val modificationResultA = ModificationResult(
+      modifiedSubRanges = Set(Range(0, 1)),
+      unmodifiedSubRanges = Set(Range(4, 5))
+    )
+    val modificationResultB = ModificationResult(
+      modifiedSubRanges = Set(Range(2, 3)),
+      unmodifiedSubRanges = Set(Range(6, 7))
+    )
+
+    val expectedModificationResult = ModificationResult(
+      modifiedSubRanges = Set(
+        Range(0, 1), Range(2, 3)
+      ), unmodifiedSubRanges = Set(
+        Range(4, 5), Range(6, 7)
+      )
+    )
+
+    modificationResultA.merge(modificationResultB) shouldBe expectedModificationResult
+  }
 
   behavior of "MinIndexFinder"
 
