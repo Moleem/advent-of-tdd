@@ -16,7 +16,11 @@ case class Range(start: Long, end: Long) {
 }
 
 case class ModificationResult(modifiedSubRanges: Set[Range], unmodifiedSubRanges: Set[Range]) {
-  def merge(other: ModificationResult): ModificationResult = ???
+  def merge(other: ModificationResult): ModificationResult =
+    ModificationResult(
+      modifiedSubRanges = this.modifiedSubRanges ++ other.modifiedSubRanges,
+      unmodifiedSubRanges = this.unmodifiedSubRanges ++ other.unmodifiedSubRanges
+    )
 
 }
 
