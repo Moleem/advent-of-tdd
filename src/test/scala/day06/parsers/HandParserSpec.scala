@@ -23,6 +23,9 @@ case object C_3 extends Card { override val strength: Int = 2 }
 case object C_2 extends Card { override val strength: Int = 1 }
 
 case class Hand(cards: List[Card])
+object Hand {
+  def apply(s: String): Hand = ???
+}
 
 class CardSpec extends AnyFlatSpec with Matchers {
   behavior of "Card"
@@ -41,6 +44,34 @@ class CardSpec extends AnyFlatSpec with Matchers {
     C_4 compare C_3 shouldBe 1
     C_3 compare C_2 shouldBe 1
   }
+}
+
+class HandSpec extends AnyFlatSpec with Matchers {
+  behavior of "Hand"
+
+  //Five of a kind, where all five cards have the same label: AAAAA
+  //Four of a kind, where four cards have the same label and one card has a different label: AA8AA
+  //Full house, where three cards have the same label, and the remaining two cards share a different label: 23332
+  //Three of a kind, where three cards have the same label, and the remaining two cards are each different from any other card in the hand: TTT98
+  //Two pair, where two cards share one label, two other cards share a second label, and the remaining card has a third label: 23432
+  //One pair, where two cards share one label, and the other three cards have a different label from the pair and each other: A23A4
+  //High card, where all cards' labels are distinct: 23456
+
+  it should "be constructable from string" in {
+    Hand("AKQJT98765432") shouldBe Hand(List(C_A, C_K, C_Q, C_J, C_T, C_9, C_8, C_7, C_6, C_5, C_4, C_3))
+  }
+
+//  it should "five of a kind should beat four of a kind" in {
+//    Hand(List(C_A, C_A, C_A, C_A, C_A)) compare Hand(List(C_A, C_A, C_8, C_A, C_A)) shouldBe 1
+//  }
+//
+//  it should "four of a kind should beat full house" in {
+//    Hand(List(C_A, C_A, C_8, C_A, C_A)) compare Hand(List(C_2, C_3, C_3, C_3, C_2)) shouldBe 1
+//  }
+//
+//  it should "four of a kind should beat full house" in {
+//    Hand(List(C_A, C_A, C_8, C_A, C_A)) compare Hand(List(C_2, C_3, C_3, C_3, C_2)) shouldBe 1
+//  }
 }
 
 
