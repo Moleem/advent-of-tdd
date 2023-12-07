@@ -16,6 +16,8 @@ case class Range(start: Long, end: Long) {
 
 case class ModificationResult(changed: Set[Range], unchanged: Set[Range]) {
 
+  val ranges: Set[Range] = ???
+
   def withChanges(changes: Set[Range]): ModificationResult =
     this.copy(
       changed = this.changed ++ changes
@@ -385,11 +387,15 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     modificationResultA.merge(modificationResultB) shouldBe expectedModificationResult
   }
 
-  it should "be updateable with changes" in {
+  it should "be updatable with changes" in {
     ModificationResult.empty.withChanges(Set(Range(1, 2))) shouldBe ModificationResult(
       changed = Set(Range(1, 2)),
       unchanged = Set()
     )
+  }
+
+  it should "be able to return both it's ranges, merged" in {
+    ModificationResult(Set(Range(1, 2)), Set(Range(3, 4))).ranges shouldBe Set(Range(1, 2), Range(3, 4))
   }
 
 
