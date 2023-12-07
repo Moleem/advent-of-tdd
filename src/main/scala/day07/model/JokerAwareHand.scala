@@ -1,10 +1,11 @@
 package day07.model
 
-import Card._
+import JokerAwareCard._
 
-case class Hand(cards: List[Card]) extends Ordered[Hand] {
-
-  private val counts: List[Int] = cards.groupBy(_.strength).values.map(_.size).toList.sorted.reverse
+case class JokerAwareHand(cards: List[JokerAwareCard]) extends Ordered[JokerAwareHand] {
+  private val countsWithoutJokers: List[Int] =
+    cards.filterNot(_ == C_J).groupBy(_.strength).values.map(_.size).toList.sorted.reverse
+  private val jokerCount: Int = cards.count(_ == C_J)
 
   private val handRanks = Map(
     List(5) ->   7,
@@ -16,8 +17,11 @@ case class Hand(cards: List[Card]) extends Ordered[Hand] {
     List(1, 1, 1, 1, 1) -> 1
   )
 
-  def compare(other: Hand): Int = {
-    val handStrengthComparison = Integer.compare(handRanks(this.counts), handRanks(other.counts))
+  def compare(other: JokerAwareHand): Int = {
+    val thisCountsWithJoker = this.countsWithoutJokers.head + jokerCount :: this.countsWithoutJokers.tail
+    val otherCountsWithJoker = other.countsWithoutJokers.head + jokerCount :: other.countsWithoutJokers.tail
+
+    val handStrengthComparison = Integer.compare(handRanks(thisCountsWithJoker), handRanks(otherCountsWithJoker))
     if (handStrengthComparison != 0) handStrengthComparison
     else
       this.cards.zip(other.cards)
@@ -27,9 +31,9 @@ case class Hand(cards: List[Card]) extends Ordered[Hand] {
   }
 }
 
-object Hand {
-  def apply(s: String): Hand =
-    Hand(
+object JokerAwareHand {
+  def apply(s: String): JokerAwareHand =
+    JokerAwareHand(
       s.toList
         .map {
           case 'A' => C_A
