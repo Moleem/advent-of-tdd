@@ -2,8 +2,7 @@ package day05
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import utils.{ContentParser, MyLittleFileReader, PrintSolution, ProblemSolver}
-
+import utils.{ContentParser, MyLittleFileReader, ProblemSolver}
 
 case class Range(start: Long, end: Long) {
 
@@ -30,7 +29,6 @@ object ModificationResult {
   def empty: ModificationResult = ModificationResult(Set.empty, Set.empty)
 
 }
-
 
 case class Modifier(scope: Range, delta: Long) {
 
@@ -84,9 +82,10 @@ case class Content(relevantInitialRanges: Set[Range], modifiers: List[Set[Modifi
 
 object RangeParser extends ContentParser[Content] {
 
-  private def parseRelevantInitialRanges(line: String): Set[Range] = {
+  private def parseRelevantRanges(line: String): Set[Range] = {
     val numbers = line.split(":")(1).split(" ").filterNot(_.isEmpty).map(_.toLong)
-    val starts = numbers.zipWithIndex.filter(_._2 % 2 == 0).map(_._1)
+
+    val starts =  numbers.zipWithIndex.filter(_._2 % 2 == 0).map(_._1)
     val lengths = numbers.zipWithIndex.filter(_._2 % 2 == 1).map(_._1)
 
     starts.zip(lengths).map { case (start, length) =>
@@ -94,7 +93,7 @@ object RangeParser extends ContentParser[Content] {
     }.toSet
   }
 
-  private def parseModifier(line: String): Modifier = {
+  private def parseModifierSet(line: String): Modifier = {
     val parts = line.split(" ")
     val start = parts(1).toLong
     val length = parts(2).toLong
@@ -107,12 +106,12 @@ object RangeParser extends ContentParser[Content] {
   private def parseModifiers(lines: String): Set[Modifier] = {
     val nonHeaderLines = lines.split("\n").tail
 
-    nonHeaderLines.map(parseModifier).toSet
+    nonHeaderLines.map(parseModifierSet).toSet
   }
 
   override def parse(content: String): Content = {
     val parts = content.split("\n\n")
-    val relevantInitialRanges = parseRelevantInitialRanges(parts.head)
+    val relevantInitialRanges = parseRelevantRanges(parts.head)
     val modifiers = parts.tail.map(parseModifiers).toList
 
     Content(relevantInitialRanges, modifiers)
