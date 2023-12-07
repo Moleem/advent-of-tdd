@@ -90,14 +90,6 @@ class CardSpec extends AnyFlatSpec with Matchers {
 class HandSpec extends AnyFlatSpec with Matchers {
   behavior of "Hand"
 
-  //Five of a kind, where all five cards have the same label: AAAAA
-  //Four of a kind, where four cards have the same label and one card has a different label: AA8AA
-  //Full house, where three cards have the same label, and the remaining two cards share a different label: 23332
-  //Three of a kind, where three cards have the same label, and the remaining two cards are each different from any other card in the hand: TTT98
-  //Two pair, where two cards share one label, two other cards share a second label, and the remaining card has a third label: 23432
-  //One pair, where two cards share one label, and the other three cards have a different label from the pair and each other: A23A4
-  //High card, where all cards' labels are distinct: 23456
-
   it should "be constructable from string" in {
     Hand("AKQJT98765432") shouldBe Hand(List(C_A, C_K, C_Q, C_J, C_T, C_9, C_8, C_7, C_6, C_5, C_4, C_3, C_2))
   }
