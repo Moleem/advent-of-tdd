@@ -10,31 +10,52 @@ case class Range(start: Long, end: Long) {
   def contains(other: Range): Boolean = this.contains(other.start) && this.contains(other.end)
 }
 
+case class ModificationResult(modifiedSubRanges: Set[Range], unmodifiedSubRanges: Set[Range])
+
 case class Modifier(modifierRange: Range, delta: Long) {
 
-  def modify(rangeToBeModified: Range): Set[Range] = {
+  def modify(rangeToBeModified: Range): ModificationResult = {
     if (modifierRange.contains(rangeToBeModified))
-      Set(
-        Range(rangeToBeModified.start + delta, rangeToBeModified.end + delta)
+      ModificationResult(
+        modifiedSubRanges = Set(
+          Range(rangeToBeModified.start + delta, rangeToBeModified.end + delta)
+        ),
+        unmodifiedSubRanges = Set()
       )
-    else if (modifierRange.contains(rangeToBeModified.start))
-      Set(
-        Range(rangeToBeModified.start + delta, modifierRange.end + delta),
-        Range(modifierRange.end + 1, rangeToBeModified.end)
+
+    else if (modifierRange.contains(rangeToBeModified.start)) {
+      ModificationResult(
+        modifiedSubRanges = Set(
+          Range(rangeToBeModified.start + delta, modifierRange.end + delta)
+        ),
+        unmodifiedSubRanges = Set(
+          Range(modifierRange.end + 1, rangeToBeModified.end)
+        )
       )
-    else if (modifierRange.contains(rangeToBeModified.end))
-      Set(
-        Range(rangeToBeModified.start, modifierRange.start - 1),
-        Range(modifierRange.start + delta, rangeToBeModified.end + delta)
+    } else if (modifierRange.contains(rangeToBeModified.end))
+      ModificationResult(
+        modifiedSubRanges = Set(
+          Range(modifierRange.start + delta, rangeToBeModified.end + delta)
+        ),
+        unmodifiedSubRanges = Set(
+          Range(rangeToBeModified.start, modifierRange.start - 1)
+        )
       )
     else if (rangeToBeModified.contains(modifierRange))
-      Set(
-        Range(rangeToBeModified.start, modifierRange.start - 1),
-        Range(modifierRange.start + delta, modifierRange.end + delta),
-        Range(modifierRange.end + 1, rangeToBeModified.end)
+      ModificationResult(
+        modifiedSubRanges = Set(
+          Range(modifierRange.start + delta, modifierRange.end + delta)
+        ),
+        unmodifiedSubRanges = Set(
+          Range(rangeToBeModified.start, modifierRange.start - 1),
+          Range(modifierRange.end + 1, rangeToBeModified.end)
+        )
       )
     else
-      Set()
+    ModificationResult(
+      modifiedSubRanges = Set(),
+      unmodifiedSubRanges = Set(rangeToBeModified)
+    )
   }
 }
 
@@ -82,18 +103,22 @@ object MinIndexFinder extends ProblemSolver[Content, Long] {
     input.modifiers
       .foldLeft(input.relevantInitialRanges) {
         case (rangesToBeModified, modifiers) =>
-          val x = rangesToBeModified.flatMap { range =>
-            val modificationResult = modifiers.flatMap{m =>
-              val res = m.modify(range)
-              res
-            }
-            if (modificationResult.isEmpty)
-              Set(range)
-            else
-              modificationResult
+          val initialModificationResult = ModificationResult(
+            modifiedSubRanges = Set(),
+            unmodifiedSubRanges = rangesToBeModified
+          )
+
+          val modificationResult = modifiers.foldLeft(initialModificationResult) { case (previousModificationResult, nextModifier) =>
+            val newModificationResults =
+              previousModificationResult.unmodifiedSubRanges.map(nextModifier.modify)
+
+            ModificationResult(
+              modifiedSubRanges = previousModificationResult.modifiedSubRanges ++ newModificationResults.flatMap(_.modifiedSubRanges),
+              unmodifiedSubRanges = newModificationResults.flatMap(_.unmodifiedSubRanges)
+            )
           }
-          println(s"after modification: $x")
-          x
+
+          modificationResult.modifiedSubRanges ++ modificationResult.unmodifiedSubRanges
       }.map(_.start)
       .min
   }
@@ -249,35 +274,50 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     val range = Range(0, 5)
     val modifier = Modifier(Range(8, 12), +5)
 
-    modifier.modify(range) shouldBe Set.empty
+    modifier.modify(range) shouldBe ModificationResult(
+      modifiedSubRanges = Set(),
+      unmodifiedSubRanges = Set(Range(0, 5))
+    )
   }
 
   it should "modify the whole range, if it falls into the modifier's range" in {
     val range = Range(0, 5)
     val modifier = Modifier(Range(-10, 10), +5)
 
-    modifier.modify(range) shouldBe Set(Range(5, 10))
+    modifier.modify(range) shouldBe ModificationResult(
+      modifiedSubRanges = Set(Range(5, 10)),
+      unmodifiedSubRanges = Set()
+    )
   }
 
   it should "split the range and modify part of it, if only it's beginning falls into the modifier's range" in {
     val range = Range(0, 5)
     val modifier = Modifier(Range(-10, 3), +5)
 
-    modifier.modify(range) shouldBe Set(Range(5, 8), Range(4, 5))
+    modifier.modify(range) shouldBe ModificationResult(
+      modifiedSubRanges = Set(Range(5, 8)),
+      unmodifiedSubRanges = Set(Range(4, 5))
+    )
   }
 
   it should "split the range and modify part of it, if only it's end falls into the modifier's range" in {
     val range = Range(0, 5)
     val modifier = Modifier(Range(3, 8), +5)
 
-    modifier.modify(range) shouldBe Set(Range(0, 2), Range(8, 10))
+    modifier.modify(range) shouldBe ModificationResult(
+      modifiedSubRanges = Set(Range(8, 10)),
+      unmodifiedSubRanges = Set(Range(0, 2))
+    )
   }
 
   it should "split the range and modify part of it, if only it's a superset of the modifier's range" in {
     val range = Range(0, 5)
     val modifier = Modifier(Range(2, 4), +5)
 
-    modifier.modify(range) shouldBe Set(Range(0, 1), Range(7, 9), Range(5, 5))
+    modifier.modify(range) shouldBe ModificationResult(
+      modifiedSubRanges = Set(Range(7, 9)),
+      unmodifiedSubRanges = Set(Range(0, 1), Range(5, 5))
+    )
   }
 
 
@@ -342,6 +382,6 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     val parsedContent = RangeParser.parse(content)
     val solution = MinIndexFinder.solve(parsedContent)
 
-    solution shouldBe 50855035
+    solution shouldBe 26714516
   }
 }
