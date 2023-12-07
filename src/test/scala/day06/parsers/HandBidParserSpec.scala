@@ -23,7 +23,7 @@ case object C_4 extends Card { override val strength: Int = 3 }
 case object C_3 extends Card { override val strength: Int = 2 }
 case object C_2 extends Card { override val strength: Int = 1 }
 
-case class Hand(cards: List[Card]) {
+case class Hand(cards: List[Card]) extends Ordered[Hand] {
   private val counts: List[Int] = cards.groupBy(_.strength).values.map(_.size).toList.sorted.reverse
 
   private val handRanks = Map(
@@ -83,7 +83,13 @@ object HandBidParser extends ContentParser[List[HandBid]] {
 }
 
 object TotalWinningCalculator extends ProblemSolver[List[HandBid], Int] {
-  override def solve(input: List[HandBid]): Int = ???
+  override def solve(input: List[HandBid]): Int = {
+    input
+      .sortBy(_.hand)
+      .zipWithIndex
+      .map { case (handBid, index) => (handBid, index+1)}
+      .map { case (handBid, rank) => handBid.bid * rank }
+  }.sum
 }
 
 class CardSpec extends AnyFlatSpec with Matchers {
