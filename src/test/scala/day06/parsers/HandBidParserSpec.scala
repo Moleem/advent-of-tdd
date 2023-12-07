@@ -2,6 +2,7 @@ package day06.parsers
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import utils.ContentParser
 
 sealed trait Card {
   val strength: Int
@@ -68,6 +69,12 @@ object Hand {
     )
 }
 
+case class HandBid(hand: Hand, bid: Int)
+
+object HandBidParser extends ContentParser[List[HandBid]] {
+  override def parse(content: String): List[HandBid] = ???
+}
+
 class CardSpec extends AnyFlatSpec with Matchers {
   behavior of "Card"
 
@@ -107,7 +114,22 @@ class HandSpec extends AnyFlatSpec with Matchers {
   }
 }
 
+class HandBidParserSpec extends AnyFlatSpec with Matchers {
+  behavior of "HandBidParser"
 
-class HandParserSpec extends AnyFlatSpec with Matchers {
+  it should "correctly parse hands and bids" in {
+    val input = """32T3K 765
+                  |T55J5 684
+                  |KK677 28
+                  |KTJJT 220
+                  |QQQJA 483""".stripMargin
 
+    HandBidParser.parse(input) shouldBe List(
+      HandBid(Hand("32T3K"), 765),
+      HandBid(Hand("T55J5"), 684),
+      HandBid(Hand("KK677"), 28),
+      HandBid(Hand("KTJJT"), 220),
+      HandBid(Hand("QQQJA"), 483)
+    )
+  }
 }
