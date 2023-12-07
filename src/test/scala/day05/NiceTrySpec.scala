@@ -2,41 +2,15 @@ package day05
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import utils.{ContentParser, ProblemSolver}
+import utils.{ContentParser, MyLittleFileReader, PrintSolution, ProblemSolver}
 
 
 case class Range(start: Long, end: Long) {
   def contains(n: Long): Boolean = start <= n && n <= end
   def contains(other: Range): Boolean = this.contains(other.start) && this.contains(other.end)
-  def overlaps(other: Range): Boolean = ???
 }
 
 case class Modifier(modifierRange: Range, delta: Long) {
-
-//  def repartition(rangeToBeModified: Range): Set[Range] = {
-//    if (modifierRange.contains(rangeToBeModified))
-//      Set(
-//        Range(rangeToBeModified.start + delta, rangeToBeModified.end + delta)
-//      )
-//    else if (modifierRange.contains(rangeToBeModified.start))
-//      Set(
-//        Range(rangeToBeModified.start + delta, modifierRange.end + delta),
-//        Range(modifierRange.end + 1, rangeToBeModified.end)
-//      )
-//    else if (modifierRange.contains(rangeToBeModified.end))
-//      Set(
-//        Range(rangeToBeModified.start, modifierRange.start - 1),
-//        Range(modifierRange.start + delta, rangeToBeModified.end + delta)
-//      )
-//    else if (rangeToBeModified.contains(modifierRange))
-//      Set(
-//        Range(rangeToBeModified.start, modifierRange.start - 1),
-//        Range(modifierRange.start + delta, modifierRange.end + delta),
-//        Range(modifierRange.end + 1, rangeToBeModified.end)
-//      )
-//    else
-//      Set(rangeToBeModified)
-//  }
 
   def modify(rangeToBeModified: Range): Set[Range] = {
     if (modifierRange.contains(rangeToBeModified))
@@ -60,7 +34,7 @@ case class Modifier(modifierRange: Range, delta: Long) {
         Range(modifierRange.end + 1, rangeToBeModified.end)
       )
     else
-      Set(rangeToBeModified)
+      Set()
   }
 }
 
@@ -108,8 +82,18 @@ object MinIndexFinder extends ProblemSolver[Content, Long] {
     input.modifiers
       .foldLeft(input.relevantInitialRanges) {
         case (rangesToBeModified, modifiers) =>
-          println(rangesToBeModified)
-          ???
+          val x = rangesToBeModified.flatMap { range =>
+            val modificationResult = modifiers.flatMap{m =>
+              val res = m.modify(range)
+              res
+            }
+            if (modificationResult.isEmpty)
+              Set(range)
+            else
+              modificationResult
+          }
+          println(s"after modification: $x")
+          x
       }.map(_.start)
       .min
   }
@@ -265,7 +249,7 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     val range = Range(0, 5)
     val modifier = Modifier(Range(8, 12), +5)
 
-    modifier.modify(range) shouldBe Set(range)
+    modifier.modify(range) shouldBe Set.empty
   }
 
   it should "modify the whole range, if it falls into the modifier's range" in {
@@ -296,38 +280,24 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     modifier.modify(range) shouldBe Set(Range(0, 1), Range(7, 9), Range(5, 5))
   }
 
-  it should "not identify overlap if there are no shared indexes" in {
-    val range = Range(0, 5)
-
-    range.overlaps(Range(8, 12)) shouldBe false
-  }
-
-  it should "identify overlap if it falls into the modifier's range" in {
-    val range = Range(0, 5)
-
-    range.overlaps(Range(-10, 10)) shouldBe true
-  }
-
-  it should "identify overlap if only it's beginning falls into the modifier's range" in {
-    val range = Range(0, 5)
-
-    range.overlaps(Range(-10, 3)) shouldBe true
-  }
-
-  it should "identify overlap if only it's end falls into the modifier's range" in {
-    val range = Range(0, 5)
-
-    range.overlaps(Range(3, 8)) shouldBe true
-  }
-
-  it should "identify overlap if only it's a superset of the modifier's range" in {
-    val range = Range(0, 5)
-
-    range.overlaps(Range(2, 4)) shouldBe true
-  }
-
 
   behavior of "MinIndexFinder"
+
+  it should "correctly apply multiple modifiers after each other" in {
+    val content = Content(
+      Set(Range(2, 6)),
+      List(
+        Set(
+          Modifier(Range(3, 4), +4),
+          Modifier(Range(7, 8), -4),
+          Modifier(Range(2, 2), +7),
+          Modifier(Range(9, 9), -7)
+        )
+      )
+    )
+
+    MinIndexFinder.solve(content) shouldBe 5
+  }
 
   it should "apply modifiers on the initial range and find the lowest index of the output" in {
 
@@ -365,5 +335,13 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
 
 
     MinIndexFinder.solve(content) shouldBe 46
+  }
+
+  it should "solve the second task faster than a lifetime" in {
+    val content = MyLittleFileReader.readFile("/day05/input-2.txt")
+    val parsedContent = RangeParser.parse(content)
+    val solution = MinIndexFinder.solve(parsedContent)
+
+    solution shouldBe 50855035
   }
 }
