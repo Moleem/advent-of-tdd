@@ -23,7 +23,27 @@ case object C_3 extends Card { override val strength: Int = 2 }
 case object C_2 extends Card { override val strength: Int = 1 }
 
 case class Hand(cards: List[Card]) {
-  def compare(other: Hand): Int = ???
+  private val counts: List[Int] = cards.groupBy(_.strength).values.map(_.size).toList.sorted.reverse
+
+  private val handRanks = Map(
+    List(5) ->   7,
+    List(4, 1) -> 6,
+    List(3, 2) -> 5,
+    List(3, 1, 1) -> 4,
+    List(2, 2, 1) -> 3,
+    List(2, 1, 1, 1) -> 2,
+    List(1, 1, 1, 1, 1) -> 1
+  )
+
+  def compare(other: Hand): Int = {
+    val handStrengthComparison = Integer.compare(handRanks(this.counts), handRanks(other.counts))
+    if (handStrengthComparison != 0) handStrengthComparison
+    else
+      this.cards.zip(other.cards)
+        .map { case (thisCard, otherCard) => thisCard compare otherCard }
+        .find(_ != 0)
+        .getOrElse(0)
+  }
 }
 
 object Hand {
@@ -90,7 +110,7 @@ class HandSpec extends AnyFlatSpec with Matchers {
     Hand("23432") compare Hand("A23A4") shouldBe 1
     Hand("A23A4") compare Hand("23456") shouldBe 1
 
-    Hand("AAAAA") compare Hand("BBBBB") shouldBe 1
+    Hand("AAAAA") compare Hand("KKKKK") shouldBe 1
     Hand("AAAA8") compare Hand("AAAA7") shouldBe 1
   }
 }
