@@ -12,6 +12,32 @@ case class Range(start: Long, end: Long) {
 }
 
 case class Modifier(modifierRange: Range, delta: Long) {
+
+//  def repartition(rangeToBeModified: Range): Set[Range] = {
+//    if (modifierRange.contains(rangeToBeModified))
+//      Set(
+//        Range(rangeToBeModified.start + delta, rangeToBeModified.end + delta)
+//      )
+//    else if (modifierRange.contains(rangeToBeModified.start))
+//      Set(
+//        Range(rangeToBeModified.start + delta, modifierRange.end + delta),
+//        Range(modifierRange.end + 1, rangeToBeModified.end)
+//      )
+//    else if (modifierRange.contains(rangeToBeModified.end))
+//      Set(
+//        Range(rangeToBeModified.start, modifierRange.start - 1),
+//        Range(modifierRange.start + delta, rangeToBeModified.end + delta)
+//      )
+//    else if (rangeToBeModified.contains(modifierRange))
+//      Set(
+//        Range(rangeToBeModified.start, modifierRange.start - 1),
+//        Range(modifierRange.start + delta, modifierRange.end + delta),
+//        Range(modifierRange.end + 1, rangeToBeModified.end)
+//      )
+//    else
+//      Set(rangeToBeModified)
+//  }
+
   def modify(rangeToBeModified: Range): Set[Range] = {
     if (modifierRange.contains(rangeToBeModified))
       Set(
@@ -83,13 +109,7 @@ object MinIndexFinder extends ProblemSolver[Content, Long] {
       .foldLeft(input.relevantInitialRanges) {
         case (rangesToBeModified, modifiers) =>
           println(rangesToBeModified)
-          val res = rangesToBeModified
-            .flatMap { rangeToBeModified =>
-
-              val modified = modifiers.flatMap(_.modify(rangeToBeModified))
-              modified
-            }
-          res
+          ???
       }.map(_.start)
       .min
   }
