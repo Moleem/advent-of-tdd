@@ -72,7 +72,14 @@ object Hand {
 case class HandBid(hand: Hand, bid: Int)
 
 object HandBidParser extends ContentParser[List[HandBid]] {
-  override def parse(content: String): List[HandBid] = ???
+  override def parse(content: String): List[HandBid] =
+    content.split("\n").toList
+      .map{line =>
+        val parts = line.split(" ")
+        val hand = Hand(parts(0))
+        val bid = parts(1).toInt
+        HandBid(hand, bid)
+      }
 }
 
 class CardSpec extends AnyFlatSpec with Matchers {
