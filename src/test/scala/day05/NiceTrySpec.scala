@@ -85,7 +85,7 @@ case class Modifier(scope: Range, delta: Long) {
 
 }
 
-case class Content(relevantInitialRanges: Set[Range], modifiers: List[Set[Modifier]])
+case class Content(relevantInitialRanges: Set[Range], modifierSets: List[Set[Modifier]])
 
 object RangeParser extends ContentParser[Content] {
 
@@ -127,16 +127,18 @@ object RangeParser extends ContentParser[Content] {
 
 object MinIndexFinder extends ProblemSolver[Content, Long] {
 
+  private def applyModifiersToSubjects(subjects: Set[Range], modifiers: Set[Modifier]): Set[Range] =
+    modifiers.foldLeft(ModificationResult(Set(), unchanged = subjects)) {
+      case (prev, next) =>
+        next.modify(prev.unchanged).withChanges(prev.changed)
+    }.ranges
+
+
   override def solve(input: Content): Long = {
     input
-      .modifiers
-      .foldLeft(input.relevantInitialRanges) {
-        case (subjects, modifiers) =>
-          modifiers.foldLeft(ModificationResult(Set(), unchanged = subjects)) {
-            case (prev, next) =>
-              next.modify(prev.unchanged).withChanges(prev.changed)
-          }.ranges
-      }.map(_.start)
+      .modifierSets
+      .foldLeft(input.relevantInitialRanges)(applyModifiersToSubjects)
+      .map(_.start)
       .min
   }
 }
