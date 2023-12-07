@@ -39,40 +39,8 @@ object ModificationResult {
 
 case class Modifier(scope: Range, delta: Long) {
 
-  private def modifyTheWhole(range: Range): ModificationResult =
-    ModificationResult(
-      changed = Set(Range(range.start+delta, range.end+delta)),
-      unchanged = Set()
-    )
-
-  private def modifyUntil(until: Long)(range: Range): ModificationResult =
-    ModificationResult(
-      changed = Set(Range(range.start + delta, until + delta)),
-      unchanged = Set(Range(until + 1, range.end))
-    )
-
-  private def modifyFrom(from: Long)(range: Range): ModificationResult =
-    ModificationResult(
-      changed = Set(Range(from + delta, range.end + delta)),
-      unchanged = Set(Range(range.start, from - 1))
-    )
-
-
-  private def modifyBetween(from: Long, until: Long)(range: Range): ModificationResult =
-    ModificationResult(
-      changed = Set(Range(from + delta, until + delta)),
-      unchanged = Set(Range(range.start, from - 1), Range(until + 1, range.end))
-    )
-
-  private def doNotModify(range: Range): ModificationResult =
-    ModificationResult(
-      changed = Set(),
-      unchanged = Set(range)
-    )
-
-
   def modify(subject: Range): ModificationResult =
-    if      (scope.contains(subject))       modifyTheWhole(subject)
+    if (scope.contains(subject))            modifyTheWhole(subject)
     else if (scope.contains(subject.start)) modifyUntil(scope.end)(subject)
     else if (scope.contains(subject.end))   modifyFrom(scope.start)(subject)
     else if (subject.contains(scope))       modifyBetween(scope.start, scope.end)(subject)
@@ -83,11 +51,49 @@ case class Modifier(scope: Range, delta: Long) {
       .map(modify)
       .reduce(_ merge _)
 
+  private def modifyTheWhole(range: Range): ModificationResult =
+    ModificationResult(
+      changed =   Set(Range(range.start + delta, range.end + delta)),
+      unchanged = Set()
+    )
+
+  private def modifyUntil(until: Long)(range: Range): ModificationResult =
+    ModificationResult(
+      changed =   Set(Range(range.start + delta, until + delta)),
+      unchanged = Set(Range(until + 1, range.end))
+    )
+
+  private def modifyFrom(from: Long)(range: Range): ModificationResult =
+    ModificationResult(
+      changed =   Set(Range(from + delta, range.end + delta)),
+      unchanged = Set(Range(range.start, from - 1))
+    )
+
+  private def modifyBetween(from: Long, until: Long)(range: Range): ModificationResult =
+    ModificationResult(
+      changed =   Set(Range(from + delta, until + delta)),
+      unchanged = Set(Range(range.start, from - 1), Range(until + 1, range.end))
+    )
+
+  private def doNotModify(range: Range): ModificationResult =
+    ModificationResult(
+      changed =   Set(),
+      unchanged = Set(range)
+    )
+
 }
 
-case class Content(relevantInitialRanges: Set[Range], modifierSets: List[Set[Modifier]])
+case class Content(relevantRanges: Set[Range], modifierSets: List[Set[Modifier]])
 
 object RangeParser extends ContentParser[Content] {
+
+  override def parse(content: String): Content = {
+    val parts = content.split("\n\n")
+    val relevantRanges = parseRelevantRanges(parts.head)
+    val modifiers = parts.tail.map(parseModifiers).toList
+
+    Content(relevantRanges, modifiers)
+  }
 
   private def parseRelevantRanges(line: String): Set[Range] = {
     val numbers = line.split(":")(1).split(" ").filterNot(_.isEmpty).map(_.toLong)
@@ -95,9 +101,10 @@ object RangeParser extends ContentParser[Content] {
     val starts =  numbers.zipWithIndex.filter(_._2 % 2 == 0).map(_._1)
     val lengths = numbers.zipWithIndex.filter(_._2 % 2 == 1).map(_._1)
 
-    starts.zip(lengths).map { case (start, length) =>
-      Range(start, start + length - 1)
-    }.toSet
+    starts
+      .zip(lengths)
+      .toSet
+      .map { case (start, length) => Range(start, start + length - 1) }
   }
 
   private def parseModifierSet(line: String): Modifier = {
@@ -113,38 +120,31 @@ object RangeParser extends ContentParser[Content] {
   private def parseModifiers(lines: String): Set[Modifier] = {
     val nonHeaderLines = lines.split("\n").tail
 
-    nonHeaderLines.map(parseModifierSet).toSet
+    nonHeaderLines
+      .map(parseModifierSet)
+      .toSet
   }
 
-  override def parse(content: String): Content = {
-    val parts = content.split("\n\n")
-    val relevantInitialRanges = parseRelevantRanges(parts.head)
-    val modifiers = parts.tail.map(parseModifiers).toList
-
-    Content(relevantInitialRanges, modifiers)
-  }
 }
 
 object MinIndexFinder extends ProblemSolver[Content, Long] {
 
-  private def applyModifiersToSubjects(subjects: Set[Range], modifiers: Set[Modifier]): Set[Range] =
-    modifiers.foldLeft(ModificationResult(Set(), unchanged = subjects)) {
-      case (prev, next) =>
+  private def applyChangeSet(subjects: Set[Range], changeSet: Set[Modifier]): Set[Range] =
+    changeSet
+      .foldLeft(ModificationResult(Set(), unchanged = subjects)) { case (prev, next) =>
         next.modify(prev.unchanged).withChanges(prev.changed)
     }.ranges
 
 
-  override def solve(input: Content): Long = {
+  override def solve(input: Content): Long =
     input
       .modifierSets
-      .foldLeft(input.relevantInitialRanges)(applyModifiersToSubjects)
+      .foldLeft(input.relevantRanges)(applyChangeSet)
       .map(_.start)
       .min
-  }
 }
 
 class NiceTrySpec extends AnyFlatSpec with Matchers {
-
 
   behavior of "RangeParser"
 
@@ -361,7 +361,7 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     ModificationResult.empty shouldBe ModificationResult(Set(), Set())
   }
 
-  it should "be able to completely merge with an other modification result" in {
+  it should "be mergeable with an other modification result" in {
     val modificationResultA = ModificationResult(
       changed = Set(Range(0, 1)),
       unchanged = Set(Range(4, 5))
