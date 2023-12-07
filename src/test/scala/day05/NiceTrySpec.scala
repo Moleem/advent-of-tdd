@@ -34,54 +34,61 @@ object ModificationResult {
 
 case class Modifier(scope: Range, delta: Long) {
 
+  private def modifyTheWhole(range: Range): ModificationResult =
+    ModificationResult(
+      changed = Set(
+        Range(range.start+delta, range.end+delta)
+      ),
+      unchanged = Set()
+    )
+
+  private def modifyUntil(until: Long)(range: Range): ModificationResult =
+    ModificationResult(
+      changed = Set(
+        Range(range.start + delta, until + delta)
+      ),
+      unchanged = Set(
+        Range(until + 1, range.end)
+      )
+    )
+
+  private def modifyFrom(from: Long)(range: Range): ModificationResult =
+    ModificationResult(
+      changed = Set(Range(from + delta, range.end + delta)),
+      unchanged = Set(Range(range.start, from - 1))
+    )
+
+
+  private def modifyBetween(from: Long, until: Long)(range: Range): ModificationResult =
+    ModificationResult(
+      changed = Set(
+        Range(from + delta, until + delta)
+      ),
+      unchanged = Set(
+        Range(range.start, from - 1),
+        Range(until + 1, range.end)
+      )
+    )
+
+  private def doNotModify(range: Range): ModificationResult =
+    ModificationResult(
+      changed = Set(),
+      unchanged = Set(range)
+    )
+
+
+  def modify(subject: Range): ModificationResult =
+    if      (scope.contains(subject))       modifyTheWhole(subject)
+    else if (scope.contains(subject.start)) modifyUntil(scope.end)(subject)
+    else if (scope.contains(subject.end))   modifyFrom(scope.start)(subject)
+    else if (subject.contains(scope))       modifyBetween(scope.start, scope.end)(subject)
+    else                                    doNotModify(subject)
+
   def modify(subjects: Set[Range]): ModificationResult =
     subjects
       .map(modify)
-      .foldLeft(ModificationResult.empty)(_ merge _)
+      .reduce(_ merge _)
 
-  def modify(rangeToBeModified: Range): ModificationResult = {
-    if (scope.contains(rangeToBeModified))
-      ModificationResult(
-        changed = Set(
-          Range(rangeToBeModified.start + delta, rangeToBeModified.end + delta)
-        ),
-        unchanged = Set()
-      )
-
-    else if (scope.contains(rangeToBeModified.start)) {
-      ModificationResult(
-        changed = Set(
-          Range(rangeToBeModified.start + delta, scope.end + delta)
-        ),
-        unchanged = Set(
-          Range(scope.end + 1, rangeToBeModified.end)
-        )
-      )
-    } else if (scope.contains(rangeToBeModified.end))
-      ModificationResult(
-        changed = Set(
-          Range(scope.start + delta, rangeToBeModified.end + delta)
-        ),
-        unchanged = Set(
-          Range(rangeToBeModified.start, scope.start - 1)
-        )
-      )
-    else if (rangeToBeModified.contains(scope))
-      ModificationResult(
-        changed = Set(
-          Range(scope.start + delta, scope.end + delta)
-        ),
-        unchanged = Set(
-          Range(rangeToBeModified.start, scope.start - 1),
-          Range(scope.end + 1, rangeToBeModified.end)
-        )
-      )
-    else
-      ModificationResult(
-        changed = Set(),
-        unchanged = Set(rangeToBeModified)
-      )
-  }
 }
 
 case class Content(relevantInitialRanges: Set[Range], modifiers: List[Set[Modifier]])
