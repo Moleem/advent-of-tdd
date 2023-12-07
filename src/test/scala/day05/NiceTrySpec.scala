@@ -16,6 +16,8 @@ case class Range(start: Long, end: Long) {
 
 case class ModificationResult(changed: Set[Range], unchanged: Set[Range]) {
 
+  def withChanges(changes: Set[Range]): ModificationResult = ???
+
   def merge(other: ModificationResult): ModificationResult =
     ModificationResult(
       changed = this.changed ++ other.changed,
@@ -120,20 +122,22 @@ object RangeParser extends ContentParser[Content] {
 
 object MinIndexFinder extends ProblemSolver[Content, Long] {
   override def solve(input: Content): Long = {
-    input.modifiers
+    input
+      .modifiers
       .foldLeft(input.relevantInitialRanges) {
         case (rangesToBeModified, modifiers) =>
-          val initialModificationResult = ModificationResult(
+          val initial = ModificationResult(
             changed = Set(),
             unchanged = rangesToBeModified
           )
 
-          val modificationResult = modifiers.foldLeft(initialModificationResult) { case (previousModificationResult, nextModifier) =>
-            val newModificationResults =
-              nextModifier.modify(previousModificationResult.unchanged)
+          val modificationResult = modifiers.foldLeft(initial) { case (prev, next) =>
+            val newModificationResults = next.modify(prev.unchanged)
+
+//            newModificationResults.withChanges(previousModificationResult.changed)
 
             ModificationResult(
-              changed = previousModificationResult.changed ++ newModificationResults.changed,
+              changed = prev.changed ++ newModificationResults.changed,
               unchanged = newModificationResults.unchanged
             )
           }
@@ -381,6 +385,13 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     )
 
     modificationResultA.merge(modificationResultB) shouldBe expectedModificationResult
+  }
+
+  it should "be updateable with changes" in {
+    ModificationResult.empty.withChanges(Set(Range(1, 2))) shouldBe ModificationResult(
+      changed = Set(Range(1, 2)),
+      unchanged = Set()
+    )
   }
 
 
