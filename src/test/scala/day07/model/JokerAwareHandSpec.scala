@@ -17,5 +17,6 @@ class JokerAwareHandSpec extends AnyFlatSpec with Matchers {
     JokerAwareHand("QQQJA") compare JokerAwareHand("T55J5") shouldBe 1
     JokerAwareHand("T55J5") compare JokerAwareHand("KK677") shouldBe 1
     JokerAwareHand("KK677") compare JokerAwareHand("32T3K") shouldBe 1
+    JokerAwareHand("22222") compare JokerAwareHand("JJJJJ") shouldBe 1
   }
 }
