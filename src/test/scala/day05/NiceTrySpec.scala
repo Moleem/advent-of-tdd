@@ -6,13 +6,26 @@ import utils.{ContentParser, MyLittleFileReader, PrintSolution, ProblemSolver}
 
 
 case class Range(start: Long, end: Long) {
-  def contains(n: Long): Boolean = start <= n && n <= end
-  def contains(other: Range): Boolean = this.contains(other.start) && this.contains(other.end)
+
+  def contains(n: Long): Boolean =
+    start <= n && n <= end
+
+  def contains(other: Range): Boolean =
+    this.contains(other.start) && this.contains(other.end)
+
 }
 
 case class ModificationResult(modifiedSubRanges: Set[Range], unmodifiedSubRanges: Set[Range])
 
 case class Modifier(modifierRange: Range, delta: Long) {
+
+  def modify(rangesToBeModified: Set[Range]): ModificationResult =
+    rangesToBeModified.map(this.modify).foldLeft(ModificationResult(Set(), Set())) { case (prevModRes, nextModRes) =>
+      ModificationResult(
+        modifiedSubRanges = prevModRes.modifiedSubRanges ++ nextModRes.modifiedSubRanges,
+        unmodifiedSubRanges = prevModRes.unmodifiedSubRanges ++ nextModRes.unmodifiedSubRanges
+      )
+    }
 
   def modify(rangeToBeModified: Range): ModificationResult = {
     if (modifierRange.contains(rangeToBeModified))
@@ -52,10 +65,10 @@ case class Modifier(modifierRange: Range, delta: Long) {
         )
       )
     else
-    ModificationResult(
-      modifiedSubRanges = Set(),
-      unmodifiedSubRanges = Set(rangeToBeModified)
-    )
+      ModificationResult(
+        modifiedSubRanges = Set(),
+        unmodifiedSubRanges = Set(rangeToBeModified)
+      )
   }
 }
 
@@ -110,11 +123,11 @@ object MinIndexFinder extends ProblemSolver[Content, Long] {
 
           val modificationResult = modifiers.foldLeft(initialModificationResult) { case (previousModificationResult, nextModifier) =>
             val newModificationResults =
-              previousModificationResult.unmodifiedSubRanges.map(nextModifier.modify)
+              nextModifier.modify(previousModificationResult.unmodifiedSubRanges)
 
             ModificationResult(
-              modifiedSubRanges = previousModificationResult.modifiedSubRanges ++ newModificationResults.flatMap(_.modifiedSubRanges),
-              unmodifiedSubRanges = newModificationResults.flatMap(_.unmodifiedSubRanges)
+              modifiedSubRanges = previousModificationResult.modifiedSubRanges ++ newModificationResults.modifiedSubRanges,
+              unmodifiedSubRanges = newModificationResults.unmodifiedSubRanges
             )
           }
 
@@ -317,6 +330,21 @@ class NiceTrySpec extends AnyFlatSpec with Matchers {
     modifier.modify(range) shouldBe ModificationResult(
       modifiedSubRanges = Set(Range(7, 9)),
       unmodifiedSubRanges = Set(Range(0, 1), Range(5, 5))
+    )
+  }
+
+  it should "be able to modify multiple ranges at the same time" in {
+    val ranges = Set(Range(0, 5), Range(10, 15))
+    val modifier = Modifier(Range(3, 13), +20)
+
+    modifier.modify(ranges) shouldBe ModificationResult(
+      modifiedSubRanges = Set(
+        Range(23, 25),
+        Range(30, 33)
+      ), unmodifiedSubRanges = Set(
+        Range(0, 2),
+        Range(14, 15)
+      )
     )
   }
 
