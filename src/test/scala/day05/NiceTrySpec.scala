@@ -136,13 +136,11 @@ object MinIndexFinder extends ProblemSolver[Content, Long] {
             unchanged = rangesToBeModified
           )
 
-          val modificationResult = modifiers.foldLeft(initial) { case (prev, next) =>
+          modifiers.foldLeft(initial) { case (prev, next) =>
             next
               .modify(prev.unchanged)
               .withChanges(prev.changed)
-          }
-
-          modificationResult.changed ++ modificationResult.unchanged
+          }.ranges
       }.map(_.start)
       .min
   }
