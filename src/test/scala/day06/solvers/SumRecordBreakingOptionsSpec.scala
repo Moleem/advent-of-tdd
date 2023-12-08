@@ -1,7 +1,6 @@
-package solvers
+package day06.solvers
 
 import day06.model.RaceData
-import day06.solvers.SumRecordBreakingOptions
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
