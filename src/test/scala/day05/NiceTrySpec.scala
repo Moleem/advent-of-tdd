@@ -98,13 +98,12 @@ object RangeParser extends ContentParser[Content] {
   private def parseRelevantRanges(line: String): Set[Range] = {
     val numbers = line.split(":")(1).split(" ").filterNot(_.isEmpty).map(_.toLong)
 
-    val starts =  numbers.zipWithIndex.filter(_._2 % 2 == 0).map(_._1)
-    val lengths = numbers.zipWithIndex.filter(_._2 % 2 == 1).map(_._1)
+    val starts: List[Long] =  numbers.zipWithIndex.filter(_._2 % 2 == 0).map(_._1).toList
+    val lengths: List[Long] = numbers.zipWithIndex.filter(_._2 % 2 == 1).map(_._1).toList
 
-    starts
-      .zip(lengths)
+    starts.zip(lengths)
+      .map{ case (start: Long, length: Long) => Range(start, start+length-1) }
       .toSet
-      .map { case (start, length) => Range(start, start + length - 1) }
   }
 
   private def parseModifierSet(line: String): Modifier = {
