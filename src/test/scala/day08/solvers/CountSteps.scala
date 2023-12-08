@@ -6,11 +6,24 @@ import org.scalatest.matchers.should.Matchers
 import utils.ProblemSolver
 
 object CountSteps extends ProblemSolver[MovementMap, Long] {
-  override def solve(input: MovementMap): Long =
-    input.directions.head match {
-      case 'L' if input.mappings("AAA")._1 == "ZZZ" => 1
-      case 'R' if input.mappings("AAA")._2 == "ZZZ" => 1
-      case _ => ???
+  override def solve(input: MovementMap): Long = {
+    var current = "AAA"
+    var stepCount = 0
+
+    while(current != "ZZZ") {
+      val directionIndex = stepCount % input.directions.size
+      current = getNext(input.mappings, current, input.directions(directionIndex))
+      stepCount += 1
+    }
+
+    stepCount
+  }
+
+
+  private def getNext(mappings: Map[String, (String, String)], key: String, direction: Char): String =
+    direction match {
+      case 'L' => mappings(key)._1
+      case 'R' => mappings(key)._2
     }
 }
 
