@@ -6,7 +6,16 @@ import org.scalatest.matchers.should.Matchers
 import utils.ProblemSolver
 
 object CountStepsSimultaneously extends ProblemSolver[MovementMap, Int] {
-  override def solve(input: MovementMap): Int = ???
+  override def solve(input: MovementMap): Int = {
+    val keysEndingWithA = input.mappings.keys.filter(_.endsWith("A"))
+
+    input.directions.head match {
+      case 'L' =>
+        if (keysEndingWithA.forall(key => input.mappings(key)._1.endsWith("Z"))) 1 else ???
+      case 'R' =>
+        if (keysEndingWithA.forall(key => input.mappings(key)._2.endsWith("Z"))) 1 else ???
+    }
+  }
 }
 
 class CountStepsSimultaneouslySpec extends AnyFlatSpec with Matchers {
