@@ -5,26 +5,33 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import utils.ProblemSolver
 
+import scala.annotation.tailrec
+
 object CountSteps extends ProblemSolver[MovementMap, Long] {
-  override def solve(input: MovementMap): Long = {
-    var current = "AAA"
-    var stepCount = 0
 
-    while(current != "ZZZ") {
-      val directionIndex = stepCount % input.directions.size
-      current = getNext(input.mappings, current, input.directions(directionIndex))
-      stepCount += 1
+  override def solve(input: MovementMap): Long =
+    countSteps(input)
+
+
+  @tailrec
+  private def countSteps(
+                          input: MovementMap,
+                          key: String = "AAA",
+                          stepCount: Int = 0
+                        ): Int = {
+    key match {
+      case "ZZZ" => stepCount
+      case _ =>
+        val directionIndex = stepCount % input.directions.size
+        val direction = input.directions(directionIndex)
+        val nextKey = direction match {
+          case 'L' => input.mappings(key)._1
+          case 'R' => input.mappings(key)._2
+        }
+        countSteps(input, nextKey, stepCount + 1)
     }
-
-    stepCount
   }
 
-
-  private def getNext(mappings: Map[String, (String, String)], key: String, direction: Char): String =
-    direction match {
-      case 'L' => mappings(key)._1
-      case 'R' => mappings(key)._2
-    }
 }
 
 class CountStepsSpec extends AnyFlatSpec with Matchers {
