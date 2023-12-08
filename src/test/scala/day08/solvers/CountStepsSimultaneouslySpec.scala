@@ -43,16 +43,18 @@ class CountStepsSimultaneouslySpec extends AnyFlatSpec with Matchers {
 
       CountStepsSimultaneously.solve(input) shouldBe 1
   }
-//
-//  it should "find step count if the target is within one loop" in {
-//    val input = MovementMap(
-//      directions = List('L', 'L'), mappings = Map(
-//        "AAA" -> ("BBB", "___"),
-//        "BBB" -> ("ZZZ", "___")
-//      )
-//    )
-//
-//    CountSteps.solve(input) shouldBe 2
-//  }
+
+    it should "find step count if the target is within one loop" in {
+    val input = MovementMap(
+      directions = List('L', 'L'), mappings = Map(
+        "11A" -> ("11B", "___"),
+        "22A" -> ("22B", "___"),
+        "11B" -> ("11Z", "___"),
+        "22B" -> ("22Z", "___"),
+      )
+    )
+
+    CountSteps.solve(input) shouldBe 2
+  }
 
 }
