@@ -10,6 +10,10 @@ object OasisRecordExtrapolation extends ProblemSolver[List[List[Int]], List[Int]
 
   private def extrapolate(input: List[Int]): Int =
     if (input.forall(_ == 0)) 0
-    else ???
+    else {
+      val nextLine =
+        (1 until input.size).map(i => input(i) - input(i-1)).toList
+      input.last + extrapolate(nextLine)
+    }
 
 }
