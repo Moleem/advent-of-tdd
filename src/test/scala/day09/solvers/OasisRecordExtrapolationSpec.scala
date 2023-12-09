@@ -8,7 +8,7 @@ class OasisRecordExtrapolationSpec extends AnyFlatSpec with Matchers {
   behavior of OasisRecordExtrapolation.getClass.getName
 
   it should "correctly extrapolate all zeroes" in {
-    OasisRecordExtrapolation.solve(List(List(0, 0, 0))) shouldBe 0
+    OasisRecordExtrapolation.solve(List(List(0, 0, 0))) shouldBe List(0)
   }
 
 }
