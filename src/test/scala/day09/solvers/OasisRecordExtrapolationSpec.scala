@@ -11,7 +11,11 @@ class OasisRecordExtrapolationSpec extends AnyFlatSpec with Matchers {
     OasisRecordExtrapolation.solve(List(List(0, 0, 0))) shouldBe List(0)
   }
 
-  it should "correctly extrapolate in one step (same, nonzero)" in {
+  it should "correctly extrapolate in one step" in {
     OasisRecordExtrapolation.solve(List(List(0, 1, 2))) shouldBe List(3)
+  }
+
+  it should "correctly extrapolate in multiple steps" in {
+    OasisRecordExtrapolation.solve(List(List(0, 1, 3, 6, 10))) shouldBe List(15)
   }
 }
