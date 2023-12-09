@@ -5,9 +5,8 @@ import utils.ContentParser
 object OasisReportParser extends ContentParser[List[List[Int]]] {
 
   override def parse(content: String): List[List[Int]] =
-    content
-      .split("\n")
-      .toList
-      .map(_.split(" ").toList.map(_.toInt))
+    content.split("\n").map(parseLine).toList
 
+  private def parseLine(line: String): List[Int] =
+    line.split(" ").map(_.toInt).toList
 }
