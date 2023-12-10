@@ -9,25 +9,12 @@ class MarkEnclosureSpec extends AnyFlatSpec with Matchers {
 
   it should "create an outer border around the original input" in {
     val input = List(
-      List(' ')
-    )
-    val expectedOutput = List(
-      List(' ', ' ', ' '),
-      List(' ', ' ', ' '),
-      List(' ', ' ', ' ')
-    )
-
-    MarkEnclosure.solve(input) shouldBe expectedOutput
-  }
-
-  it should "keep the original pipes intact" in {
-    val input = List(
       List('S', '7'),
       List('L', 'J')
     )
     val expectedOutput = List(
       List(' ', ' ', ' ', ' '),
-      List(' ', 'S', '7', ' '),
+      List(' ', 'F', '7', ' '),
       List(' ', 'L', 'J', ' '),
       List(' ', ' ', ' ', ' ')
     )
@@ -44,7 +31,7 @@ class MarkEnclosureSpec extends AnyFlatSpec with Matchers {
     )
     val expectedOutput = List(
       List(' ', ' ', ' ', ' ', ' ', ' '),
-      List(' ', 'S', '-', '-', '7', ' '),
+      List(' ', 'F', '-', '-', '7', ' '),
       List(' ', '|', 'F', '7', '|', ' '),
       List(' ', '|', '|', '|', '|', ' '),
       List(' ', 'L', 'J', 'L', 'J', ' '),
@@ -63,7 +50,7 @@ class MarkEnclosureSpec extends AnyFlatSpec with Matchers {
     )
     val expectedOutput = List(
       List(' ', ' ', ' ', ' ', ' ', ' ', ' '),
-      List(' ', 'S', '-', '-', '-', '7', ' '),
+      List(' ', 'F', '-', '-', '-', '7', ' '),
       List(' ', '|', 'F', '-', '7', '|', ' '),
       List(' ', '|', '|', ' ', '|', '|', ' '),
       List(' ', 'L', 'J', ' ', 'L', 'J', ' '),
@@ -72,5 +59,26 @@ class MarkEnclosureSpec extends AnyFlatSpec with Matchers {
 
     MarkEnclosure.solve(input) shouldBe expectedOutput
   }
+
+
+  it should "replace any non-main-pipe with space" in {
+    val input = List(
+      List('S', '-', '-', '-', '7'),
+      List('|', 'F', '-', '7', '|'),
+      List('|', '|', '.', '|', '|'),
+      List('L', 'J', '#', 'L', 'J')
+    )
+    val expectedOutput = List(
+      List(' ', ' ', ' ', ' ', ' ', ' ', ' '),
+      List(' ', 'F', '-', '-', '-', '7', ' '),
+      List(' ', '|', 'F', '-', '7', '|', ' '),
+      List(' ', '|', '|', ' ', '|', '|', ' '),
+      List(' ', 'L', 'J', ' ', 'L', 'J', ' '),
+      List(' ', ' ', ' ', ' ', ' ', ' ', ' ')
+    )
+
+    MarkEnclosure.solve(input) shouldBe expectedOutput
+  }
+
 
 }
