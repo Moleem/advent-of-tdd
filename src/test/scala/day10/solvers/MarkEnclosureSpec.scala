@@ -88,7 +88,7 @@ class MarkEnclosureSpec extends AnyFlatSpec with Matchers {
     )
     val expectedOutput = List(
       List(' ', ' ', ' ', ' ', ' '),
-      List(' ', 'S', '-', '7', ' '),
+      List(' ', 'F', '-', '7', ' '),
       List(' ', '|', 'X', '|', ' '),
       List(' ', 'L', '-', 'J', ' '),
       List(' ', ' ', ' ', ' ', ' ')

@@ -3,26 +3,20 @@ package day10.solvers
 import utils.ProblemSolver
 
 import scala.annotation.tailrec
+import scala.collection.immutable.{List, Set}
 
 object MarkEnclosure extends ProblemSolver[List[List[Char]], List[List[Char]]] {
 
   override def solve(input: List[List[Char]]): List[List[Char]] = {
-    val rowCount = input.size + 2
-    val colCount = input.head.size + 2
-
     val (startRow, startCol) = findStartCoordinates(input)
     val startPipe = determineStartPipeType(input, startRow, startCol)
     val inputWithProperStartPipe = replace(input, startRow, startCol, startPipe)
     val mainPipeCoordinates = getMainPipeCoordinates(inputWithProperStartPipe, startRow, startCol)
+    val inputWithNonMainPipesErased = replaceExcept(inputWithProperStartPipe, mainPipeCoordinates)
+    val inputWithBorder = addBorder(inputWithNonMainPipesErased)
+    val nonEnclosedErased = eraseNonEnclosed(inputWithBorder)
 
-    (0 until rowCount).map { row =>
-      (0 until colCount).map { col =>
-        if (mainPipeCoordinates.contains(row-1, col-1))
-          inputWithProperStartPipe(row-1)(col-1)
-        else
-          ' '
-      }.toList
-    }.toList
+    nonEnclosedErased
 
   }
 
@@ -37,6 +31,30 @@ object MarkEnclosure extends ProblemSolver[List[List[Char]], List[List[Char]]] {
     input.indices.map { row =>
       input.head.indices.map { col =>
         if (row == replaceRow && col == replaceCol) replaceChar
+        else input(row)(col)
+      }.toList
+    }.toList
+
+  private def addBorder(input: List[List[Char]]): List[List[Char]] =
+    (0 until input.size+2).map { row =>
+      (0 until input.head.size+2).map { col =>
+        if (row == 0 || col == 0 || row == input.size+1 || col == input.head.size+1) ' '
+        else input(row-1)(col-1)
+      }.toList
+    }.toList
+
+  private def replaceExcept(input: List[List[Char]], mainPipes: Set[(Int, Int)]): List[List[Char]] =
+    input.indices.map { row =>
+      input.head.indices.map { col =>
+        if (mainPipes.contains((row, col))) input(row)(col)
+        else 'X'
+      }.toList
+    }.toList
+
+  private def erase(input: List[List[Char]], toBeReplaced: Set[(Int, Int)]): List[List[Char]] =
+    input.indices.map { row =>
+      input.head.indices.map { col =>
+        if (toBeReplaced.contains((row, col))) ' '
         else input(row)(col)
       }.toList
     }.toList
@@ -110,5 +128,35 @@ object MarkEnclosure extends ProblemSolver[List[List[Char]], List[List[Char]]] {
     }
 
     collectCoordinates(startRow, startCol, startDirection, Set.empty)
+  }
+
+  private def eraseNonEnclosed(input: List[List[Char]]): List[List[Char]] = {
+    def helper(toBeChecked: List[(Int, Int)], alreadyChecked: Set[(Int, Int)], toBeErased: Set[(Int, Int)]): Set[(Int, Int)] = {
+      toBeChecked match {
+        case Nil => toBeErased
+        case head :: tail =>
+          val (row, col) = head
+          val neighbors = Set((row-1, col), (row+1, col), (row, col-1), (row, col+1))
+          val validNeighbors = neighbors.filter { case (r, c) => isValidCoordinate(input, r, c)}
+          val nonCheckedValidNeighbors = validNeighbors.diff(alreadyChecked)
+
+          val newToBeChecked =
+            if (Set('X', ' ').contains(input(row)(col)))
+              (nonCheckedValidNeighbors.toList ++ tail).distinct
+            else tail
+          val newAlreadyChecked = Set(head) ++ alreadyChecked
+          val newToBeErased =
+            if (Set('X', ' ').contains(input(row)(col)))
+              Set(head) ++ toBeErased
+            else toBeErased
+
+          helper(newToBeChecked, newAlreadyChecked, newToBeErased)
+
+      }
+    }
+
+    val coordinatesToBeErased = helper(List((0, 0)), Set.empty, Set.empty)
+
+    erase(input, coordinatesToBeErased)
   }
 }
