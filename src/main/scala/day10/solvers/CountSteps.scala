@@ -26,21 +26,36 @@ object CountSteps extends ProblemSolver[List[List[Char]], Int] {
         case ('S', direction) if direction.nonEmpty => currentStepCount
         case ('S', direction) if direction.isEmpty =>
           val (southRow, southCol) = getSouthCoordinates(currentRow, currentCol)
+          val (eastRow, eastCol) = getEastCoordinates(currentRow, currentCol)
 
-          if (canMoveTo(southRow, southCol))
+          if (canMoveToSouth(southRow, southCol))
             countSteps("north", southRow, southCol, currentStepCount+1)
+          else if (canMoveToEast(eastRow, eastCol))
+            countSteps("west", eastRow, eastCol, currentStepCount+1)
           else ???
         case ('|', "north") =>
           val (southRow, southCol) = getSouthCoordinates(currentRow, currentCol)
-          countSteps("north", southRow, southCol, currentStepCount+1)
+          countSteps("north", southRow, southCol, currentStepCount + 1)
+        case ('-', "west") =>
+          val (eastRow, eastCol) = getEastCoordinates(currentRow, currentCol)
+          countSteps("west", eastRow, eastCol, currentStepCount+1)
       }
 
     def getSouthCoordinates(currentRow: Int, currentCol: Int): (Int, Int) =
-      (currentRow+1, currentCol)
+      (currentRow + 1, currentCol)
 
-    def canMoveTo(row: Int, col: Int): Boolean =
+    def getEastCoordinates(currentRow: Int, currentCol: Int): (Int, Int) =
+      (currentRow, currentCol + 1)
+
+    def canMoveToSouth(row: Int, col: Int): Boolean =
       0 <= row && row < input.size &&
-      0 <= col && col < input.head.size
+        0 <= col && col < input.head.size &&
+        Set('|', 'J', 'L').contains(input(row)(col))
+
+    def canMoveToEast(row: Int, col: Int): Boolean =
+      0 <= row && row < input.size &&
+        0 <= col && col < input.head.size &&
+        Set('-', 'J', '7').contains(input(row)(col))
 
     val (startRow, startCol) = findStart(0, 0)
     countSteps("", startRow, startCol, 0)
