@@ -11,7 +11,7 @@ object MarkEnclosure extends ProblemSolver[List[List[Char]], List[List[Char]]] {
 
     (0 until rowCount).map { row =>
       (0 until colCount).map { col =>
-        if (row == 0 || row == rowCount-1 || col == 0 || col == colCount -1) '.'
+        if (row == 0 || row == rowCount-1 || col == 0 || col == colCount -1) ' '
         else input(row-1)(col-1)
       }.toList
     }.toList

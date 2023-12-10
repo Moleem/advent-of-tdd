@@ -9,12 +9,12 @@ class MarkEnclosureSpec extends AnyFlatSpec with Matchers {
 
   it should "create an outer border around the original input" in {
     val input = List(
-      List('.')
+      List(' ')
     )
     val expectedOutput = List(
-      List('.', '.', '.'),
-      List('.', '.', '.'),
-      List('.', '.', '.')
+      List(' ', ' ', ' '),
+      List(' ', ' ', ' '),
+      List(' ', ' ', ' ')
     )
 
     MarkEnclosure.solve(input) shouldBe expectedOutput
@@ -22,14 +22,33 @@ class MarkEnclosureSpec extends AnyFlatSpec with Matchers {
 
   it should "keep the original pipes intact" in {
     val input = List(
-      List('S','7'),
-      List('L','J')
+      List('S', '7'),
+      List('L', 'J')
     )
     val expectedOutput = List(
-      List('.', '.', '.', '.'),
-      List('.', 'S', '7', '.'),
-      List('.', 'L', 'J', '.'),
-      List('.', '.', '.', '.')
+      List(' ', ' ', ' ', ' '),
+      List(' ', 'S', '7', ' '),
+      List(' ', 'L', 'J', ' '),
+      List(' ', ' ', ' ', ' ')
+    )
+
+    MarkEnclosure.solve(input) shouldBe expectedOutput
+  }
+
+  it should "fill with space anything that touches the wall" in {
+    val input = List(
+      List('S', '-', '-', '7'),
+      List('|', 'F', '7', '|'),
+      List('|', '|', '|', '|'),
+      List('L', 'J', 'L', 'J')
+    )
+    val expectedOutput = List(
+      List(' ', ' ', ' ', ' ', ' ', ' '),
+      List(' ', 'S', '-', '-', '7', ' '),
+      List(' ', '|', 'F', '7', '|', ' '),
+      List(' ', '|', '|', '|', '|', ' '),
+      List(' ', 'L', 'J', 'L', 'J', ' '),
+      List(' ', ' ', ' ', ' ', ' ', ' ')
     )
 
     MarkEnclosure.solve(input) shouldBe expectedOutput
