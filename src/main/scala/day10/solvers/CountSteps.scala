@@ -46,6 +46,9 @@ object CountSteps extends ProblemSolver[List[List[Char]], Int] {
         case ('L', "north") =>
           val (eastRow, eastCol) = getEastCoordinates(currentRow, currentCol)
           countSteps("west", eastRow, eastCol, currentStepCount + 1)
+        case ('L', "east") =>
+          val (northRow, northCol) = getNorthCoordinates(currentRow, currentCol)
+          countSteps("south", northRow, northCol, currentStepCount + 1)
         case ('J', "north") =>
           val (westRow, westCol) = getWestCoordinates(currentRow, currentCol)
           countSteps("east", westRow, westCol, currentStepCount + 1)
