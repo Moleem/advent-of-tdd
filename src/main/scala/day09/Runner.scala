@@ -1,9 +1,7 @@
 package day09
 
-import day00.parsers._
-import day00.solvers._
 import day09.parsers.OasisReportParser
-import day09.solvers.OasisRecordExtrapolation
+import day09.solvers.{OasisRecordExtrapolation, ReverseLists, SumList}
 import utils.PrintSolution
 
 object Runner extends App {
@@ -13,13 +11,13 @@ object Runner extends App {
   PrintSolution(
     inputFileName = s"/$dayNum/input-1.txt",
     contentParser = OasisReportParser,
-    problemSolver = OasisRecordExtrapolation.andThen((extrapolations: List[Int]) => extrapolations.sum)
+    problemSolver = OasisRecordExtrapolation andThen SumList
   )
 
-//  PrintSolution(
-//    inputFileName = s"/$dayNum/input-2.txt",
-//    contentParser = DummyTask2Parser,
-//    problemSolver = DummyTask2Solver
-//  )
+  PrintSolution(
+    inputFileName = s"/$dayNum/input-2.txt",
+    contentParser = OasisReportParser,
+    problemSolver = ReverseLists andThen OasisRecordExtrapolation andThen SumList
+  )
 
 }
