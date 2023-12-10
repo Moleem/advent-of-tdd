@@ -47,13 +47,14 @@ object MarkEnclosure extends ProblemSolver[List[List[Char]], List[List[Char]]] {
     val isOpenToSouth = hasNorthConnector(input, row+1, col)
     val isOpenToEast = hasWestConnector(input, row, col+1)
 
-    if (isOpenToNorth && isOpenToWest) 'J'
-    else if (isOpenToNorth && isOpenToSouth) '|'
-    else if (isOpenToNorth && isOpenToEast) 'L'
-    else if (isOpenToWest && isOpenToSouth) '7'
-    else if (isOpenToWest && isOpenToEast) '-'
-    else if (isOpenToSouth && isOpenToEast) 'F'
-    else ??? // not possible
+    (isOpenToNorth, isOpenToWest, isOpenToSouth, isOpenToEast) match {
+      case (true, true, true, false) => 'J'
+      case (true, false, true, false) => '|'
+      case (true, false, false, true) => 'L'
+      case (false, true, true, false) => '7'
+      case (false, true, false, true) => '-'
+      case (false, false, true, true) => 'F'
+    }
   }
 
   private def isValidCoordinate(input: List[List[Char]], row: Int, col: Int): Boolean =
