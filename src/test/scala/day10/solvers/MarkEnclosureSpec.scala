@@ -35,7 +35,7 @@ class MarkEnclosureSpec extends AnyFlatSpec with Matchers {
     MarkEnclosure.solve(input) shouldBe expectedOutput
   }
 
-  it should "fill with space anything that touches the wall" in {
+  it should "fill with space anything that (even transitively) touches the wall" in {
     val input = List(
       List('S', '-', '-', '7'),
       List('|', 'F', '7', '|'),
@@ -49,6 +49,25 @@ class MarkEnclosureSpec extends AnyFlatSpec with Matchers {
       List(' ', '|', '|', '|', '|', ' '),
       List(' ', 'L', 'J', 'L', 'J', ' '),
       List(' ', ' ', ' ', ' ', ' ', ' ')
+    )
+
+    MarkEnclosure.solve(input) shouldBe expectedOutput
+  }
+
+  it should "fill with space anything that (even transitively) touches the wall, even within the shape" in {
+    val input = List(
+      List('S', '-', '-', '-', '7'),
+      List('|', 'F', '-', '7', '|'),
+      List('|', '|', ' ', '|', '|'),
+      List('L', 'J', ' ', 'L', 'J')
+    )
+    val expectedOutput = List(
+      List(' ', ' ', ' ', ' ', ' ', ' ', ' '),
+      List(' ', 'S', '-', '-', '-', '7', ' '),
+      List(' ', '|', 'F', '-', '7', '|', ' '),
+      List(' ', '|', '|', ' ', '|', '|', ' '),
+      List(' ', 'L', 'J', ' ', 'L', 'J', ' '),
+      List(' ', ' ', ' ', ' ', ' ', ' ', ' ')
     )
 
     MarkEnclosure.solve(input) shouldBe expectedOutput
