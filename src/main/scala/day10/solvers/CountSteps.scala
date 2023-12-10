@@ -28,6 +28,7 @@ object CountSteps extends ProblemSolver[List[List[Char]], Int] {
           val (southRow, southCol) = getSouthCoordinates(currentRow, currentCol)
           val (eastRow, eastCol) = getEastCoordinates(currentRow, currentCol)
           val (northRow, northCol) = getNorthCoordinates(currentRow, currentCol)
+          val (westRow, westCol) = getWestCoordinates(currentRow, currentCol)
 
           if (canMoveToSouth(southRow, southCol))
             countSteps("north", southRow, southCol, currentStepCount+1)
@@ -54,6 +55,9 @@ object CountSteps extends ProblemSolver[List[List[Char]], Int] {
         case ('-', "west") =>
           val (eastRow, eastCol) = getEastCoordinates(currentRow, currentCol)
           countSteps("west", eastRow, eastCol, currentStepCount + 1)
+        case ('7', "south") =>
+          val (westRow, westCol) = getWestCoordinates(currentRow, currentCol)
+          countSteps("east", westRow, westCol, currentStepCount + 1)
         case _ => ???
       }
 
@@ -81,9 +85,13 @@ object CountSteps extends ProblemSolver[List[List[Char]], Int] {
 
     def canMoveToNorth(row: Int, col: Int): Boolean =
       0 <= row && row < input.size &&
-      0 <= col && col < input.head.size &&
-      Set('-', 'F', 'L').contains(input(row)(col))
+        0 <= col && col < input.head.size &&
+        Set('-', 'F', 'L').contains(input(row)(col))
 
+    def canMoveToWest(row: Int, col: Int): Boolean =
+      0 <= row && row < input.size &&
+      0 <= col && col < input.head.size &&
+      Set('-', '7', 'J').contains(input(row)(col))
 
 
     val (startRow, startCol) = findStart(0, 0)
