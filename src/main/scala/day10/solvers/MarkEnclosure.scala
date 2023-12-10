@@ -14,11 +14,47 @@ object MarkEnclosure extends ProblemSolver[List[List[Char]], List[List[Char]]] {
     val mainPipeCoordinates = getMainPipeCoordinates(inputWithProperStartPipe, startRow, startCol)
     val inputWithNonMainPipesErased = replaceExcept(inputWithProperStartPipe, mainPipeCoordinates)
     val inputWithBorder = addBorder(inputWithNonMainPipesErased)
-    val nonEnclosedErased = eraseNonEnclosed(inputWithBorder)
+    val inputExpanded = expand(inputWithBorder)
+    val nonEnclosedErased = eraseNonEnclosed(inputExpanded)
+    val inputCollapsed = collapse(nonEnclosedErased)
 
-    nonEnclosedErased
-
+    inputCollapsed
   }
+
+  private def expand(input: List[List[Char]]): List[List[Char]] = {
+    val columnsExpandedInput =
+      input.indices.map { row =>
+        input.head.indices.flatMap { col =>
+            input(row)(col) match {
+              case 'X' => List('X', 'X')
+              case '7' => List('7', 'X')
+              case 'F' => List('F', '-')
+              case 'L' => List('L', '-')
+              case 'J' => List('J', 'X')
+              case '-' => List('-', '-')
+              case '|' => List('|', 'X')
+            }
+        }.toList
+      }.toList
+
+    columnsExpandedInput.flatMap(line => List(line, line.map {
+      case 'X' => 'X'
+      case '7' => '|'
+      case 'F' => '|'
+      case 'L' => 'X'
+      case 'J' => 'X'
+      case '-' => 'X'
+      case '|' => '|'
+    }))
+  }
+
+
+  private def collapse(input: List[List[Char]]): List[List[Char]] =
+    0.until(input.size, 2).map { row =>
+      0.until(input.head.size, 2).map { col =>
+        input(row)(col)
+      }.toList
+    }.toList
 
   @tailrec
   private def findStartCoordinates(input: List[List[Char]], row: Int = 0, col: Int = 0): (Int, Int) = {
@@ -38,7 +74,7 @@ object MarkEnclosure extends ProblemSolver[List[List[Char]], List[List[Char]]] {
   private def addBorder(input: List[List[Char]]): List[List[Char]] =
     (0 until input.size+2).map { row =>
       (0 until input.head.size+2).map { col =>
-        if (row == 0 || col == 0 || row == input.size+1 || col == input.head.size+1) ' '
+        if (row == 0 || col == 0 || row == input.size+1 || col == input.head.size+1) 'X'
         else input(row-1)(col-1)
       }.toList
     }.toList
@@ -137,22 +173,17 @@ object MarkEnclosure extends ProblemSolver[List[List[Char]], List[List[Char]]] {
         case Nil => toBeErased
         case head :: tail =>
           val (row, col) = head
-          val neighbors = Set((row-1, col), (row+1, col), (row, col-1), (row, col+1))
-          val validNeighbors = neighbors.filter { case (r, c) => isValidCoordinate(input, r, c)}
-          val nonCheckedValidNeighbors = validNeighbors.diff(alreadyChecked)
+          if (Set('X', ' ').contains(input(row)(col))) {
+            val neighbors = Set((row - 1, col), (row + 1, col), (row, col - 1), (row, col + 1))
+            val validNeighbors = neighbors.filter { case (r, c) => isValidCoordinate(input, r, c) }
+            val nonCheckedValidNeighbors = validNeighbors.diff(alreadyChecked)
+            val nonCheckedNonPipeNeighbors = nonCheckedValidNeighbors.filter { case (r, c) => Set('X', ' ').contains(input(r)(c)) }
 
-          val newToBeChecked =
-            if (Set('X', ' ').contains(input(row)(col)))
-              (nonCheckedValidNeighbors.toList ++ tail).distinct
-            else tail
-          val newAlreadyChecked = Set(head) ++ alreadyChecked
-          val newToBeErased =
-            if (Set('X', ' ').contains(input(row)(col)))
-              Set(head) ++ toBeErased
-            else toBeErased
+            helper((tail ++ nonCheckedNonPipeNeighbors).distinct, Set((row, col)) ++ alreadyChecked, Set((row, col)) ++ toBeErased)
 
-          helper(newToBeChecked, newAlreadyChecked, newToBeErased)
-
+          } else {
+            helper(tail, Set((row, col)) ++ alreadyChecked, toBeErased)
+          }
       }
     }
 
@@ -160,4 +191,5 @@ object MarkEnclosure extends ProblemSolver[List[List[Char]], List[List[Char]]] {
 
     erase(input, coordinatesToBeErased)
   }
+
 }
