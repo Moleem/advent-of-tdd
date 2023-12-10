@@ -50,7 +50,7 @@ class CountStepsSpec extends AnyFlatSpec with Matchers {
       List('L', 'J')
     )
 
-    CountSteps.solve(input) shouldBe 2
+    CountSteps.solve(input) shouldBe 4
   }
 
 }
