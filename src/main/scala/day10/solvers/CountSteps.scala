@@ -36,6 +36,8 @@ object CountSteps extends ProblemSolver[List[List[Char]], Int] {
             countSteps("west", eastRow, eastCol, currentStepCount + 1)
           else if (canMoveToNorth(northRow, northCol))
             countSteps("south", northRow, northCol, currentStepCount + 1)
+          else if (canMoveToWest(westRow, westCol))
+            countSteps("east", westRow, westCol, currentStepCount + 1)
           else ???
         case ('|', "north") =>
           val (southRow, southCol) = getSouthCoordinates(currentRow, currentCol)

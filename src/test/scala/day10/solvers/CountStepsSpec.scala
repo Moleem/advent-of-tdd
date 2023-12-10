@@ -112,6 +112,7 @@ class CountStepsSpec extends AnyFlatSpec with Matchers {
 
     CountSteps.solve(input) shouldBe 8
   }
+
   it should "be able to count steps north east" in {
     val input = List(
       List('S', '-', '7'),
@@ -120,6 +121,18 @@ class CountStepsSpec extends AnyFlatSpec with Matchers {
     )
 
     CountSteps.solve(input) shouldBe 8
+  }
+
+  it should "solve the example" in {
+    val input = List(
+      List('.','.','F','7','.'),
+      List('.','F','J','|','.'),
+      List('S','J','.','L','7'),
+      List('|','F','-','-','J'),
+      List('L','J','.','.','.')
+    )
+
+    CountSteps.solve(input) shouldBe 16
   }
 
 }
