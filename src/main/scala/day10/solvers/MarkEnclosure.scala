@@ -79,6 +79,7 @@ object MarkEnclosure extends ProblemSolver[List[List[Char]], List[List[Char]]] {
 
   private def getMainPipeCoordinates(input: List[List[Char]], startRow: Int, startCol: Int): Set[(Int, Int)] = {
 
+    @tailrec
     def collectCoordinates(row: Int, col: Int, from: String, accumulator: Set[(Int, Int)]): Set[(Int, Int)] = {
       if (accumulator.contains((row, col))) accumulator
       else {

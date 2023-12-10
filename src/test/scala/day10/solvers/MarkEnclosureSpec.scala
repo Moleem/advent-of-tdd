@@ -80,5 +80,22 @@ class MarkEnclosureSpec extends AnyFlatSpec with Matchers {
     MarkEnclosure.solve(input) shouldBe expectedOutput
   }
 
+  it should "fill enclosed space with X" in {
+    val input = List(
+      List('S', '-', '7'),
+      List('|', 'X', '|'),
+      List('L', '-', 'J')
+    )
+    val expectedOutput = List(
+      List(' ', ' ', ' ', ' ', ' '),
+      List(' ', 'S', '-', '7', ' '),
+      List(' ', '|', 'X', '|', ' '),
+      List(' ', 'L', '-', 'J', ' '),
+      List(' ', ' ', ' ', ' ', ' ')
+    )
+
+    MarkEnclosure.solve(input) shouldBe expectedOutput
+  }
+
 
 }
