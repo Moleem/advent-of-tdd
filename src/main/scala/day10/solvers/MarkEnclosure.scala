@@ -131,6 +131,7 @@ object MarkEnclosure extends ProblemSolver[List[List[Char]], List[List[Char]]] {
   }
 
   private def eraseNonEnclosed(input: List[List[Char]]): List[List[Char]] = {
+    @tailrec
     def helper(toBeChecked: List[(Int, Int)], alreadyChecked: Set[(Int, Int)], toBeErased: Set[(Int, Int)]): Set[(Int, Int)] = {
       toBeChecked match {
         case Nil => toBeErased
