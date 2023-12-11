@@ -27,7 +27,7 @@ class GalaxyMapParserSpec extends AnyFlatSpec with Matchers {
       5 -> (5, 1),
       6 -> (6, 9),
       7 -> (8, 7),
-      8 -> (9, 9),
+      8 -> (9, 0),
       9 -> (9, 4),
     )
 
