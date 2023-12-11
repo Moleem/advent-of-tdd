@@ -53,7 +53,6 @@ class GalaxyMapParserSpec extends AnyFlatSpec with Matchers {
     new GalaxyMapParser(1).parse(input) shouldBe expectedOutput
   }
 
-
   it should "correctly expand space along both empty rows and columns" in {
     val input =
       """#...
@@ -68,6 +67,34 @@ class GalaxyMapParserSpec extends AnyFlatSpec with Matchers {
     )
 
     new GalaxyMapParser(1).parse(input) shouldBe expectedOutput
+  }
+
+  it should "behave correctly example 1 - no expansion" in {
+    val input =
+      """...#......
+        |.......#..
+        |#.........
+        |..........
+        |......#...
+        |.#........
+        |.........#
+        |..........
+        |.......#..
+        |#...#.....""".stripMargin
+
+    val expectedOutput = Map(
+      0 -> (0, 3),
+      1 -> (1, 7),
+      2 -> (2, 0),
+      3 -> (4, 6),
+      4 -> (5, 1),
+      5 -> (6, 9),
+      6 -> (8, 7),
+      7 -> (9, 0),
+      8 -> (9, 4),
+    )
+
+    new GalaxyMapParser(0).parse(input) shouldBe expectedOutput
   }
 
 }
