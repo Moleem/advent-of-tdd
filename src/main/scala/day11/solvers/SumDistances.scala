@@ -12,7 +12,7 @@ object SumDistances extends ProblemSolver[Map[Int, (Int, Int)], Int] {
       }.filter { case (left, right) => left < right }
 
     val distances = pairs.map { case (left, right) =>
-      input(right)._1 - input(left)._1 + input(right)._2 - input(left)._2
+      Math.abs(input(right)._1 - input(left)._1) + Math.abs(input(right)._2 - input(left)._2)
     }
 
     distances.sum
