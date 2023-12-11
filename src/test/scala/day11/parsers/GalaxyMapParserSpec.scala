@@ -97,4 +97,32 @@ class GalaxyMapParserSpec extends AnyFlatSpec with Matchers {
     new GalaxyMapParser(0).parse(input) shouldBe expectedOutput
   }
 
+  it should "behave correctly example 1 - task1 expansion (single)" in {
+    val input =
+      """...#......
+        |.......#..
+        |#.........
+        |..........
+        |......#...
+        |.#........
+        |.........#
+        |..........
+        |.......#..
+        |#...#.....""".stripMargin
+
+    val expectedOutput = Map(
+      0 -> (0,     3+1),
+      1 -> (1,     7+1+1),
+      2 -> (2,     0),
+      3 -> (4+1,   6+1+1),
+      4 -> (5+1,   1),
+      5 -> (6+1,   9+1+1+1),
+      6 -> (8+1+1, 7+1+1),
+      7 -> (9+1+1, 0),
+      8 -> (9+1+1, 4+1),
+    )
+
+    new GalaxyMapParser(1).parse(input) shouldBe expectedOutput
+  }
+
 }
