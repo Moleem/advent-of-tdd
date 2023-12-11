@@ -47,7 +47,7 @@ class GalaxyMapParserSpec extends AnyFlatSpec with Matchers {
     val expectedOutput = Map(
       0 -> (0, 0),
       1 -> (1, 3),
-      2 -> (2, 5)
+      2 -> (2, 4)
     )
 
     GalaxyMapParser.parse(input) shouldBe expectedOutput

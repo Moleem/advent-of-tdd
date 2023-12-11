@@ -9,6 +9,9 @@ object GalaxyMapParser extends ContentParser[ Map[Int, (Int, Int)]] {
     def getNumberOfEmptyRowsBefore(row: Int): Int =
       (0 until row).count(id => matrix(id).forall(_ == '.'))
 
+    def getNumberOfEmptyColsBefore(col: Int): Int =
+      (0 until col).count(id => matrix.map(_(id)).forall(_ == '.'))
+
 
     val galaxies = matrix.indices.flatMap { row =>
       matrix.head.indices.map { col =>
@@ -22,7 +25,8 @@ object GalaxyMapParser extends ContentParser[ Map[Int, (Int, Int)]] {
 
     galaxies.map { case (id, (row, col)) =>
       val numberOfEmptyRowsBefore = getNumberOfEmptyRowsBefore(row)
-      id -> (row + numberOfEmptyRowsBefore, col)
+      val numberOfEmptyColdBefore = getNumberOfEmptyColsBefore(col)
+      id -> (row + numberOfEmptyRowsBefore, col + numberOfEmptyColdBefore)
     }
   }
 
