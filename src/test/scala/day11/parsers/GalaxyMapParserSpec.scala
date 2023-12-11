@@ -5,7 +5,7 @@ import org.scalatest.matchers.should.Matchers
 
 class GalaxyMapParserSpec extends AnyFlatSpec with Matchers {
 
-  behavior of GalaxyMapParser.getClass.getName
+  behavior of "GalaxyMapParser"
 
   it should "correctly parse a map" in {
     val input =
@@ -19,7 +19,7 @@ class GalaxyMapParserSpec extends AnyFlatSpec with Matchers {
       2 -> (2, 2)
     )
 
-    GalaxyMapParser.parse(input) shouldBe expectedOutput
+    new GalaxyMapParser(1).parse(input) shouldBe expectedOutput
   }
 
   it should "correctly expand space along empty rows" in {
@@ -35,7 +35,7 @@ class GalaxyMapParserSpec extends AnyFlatSpec with Matchers {
       2 -> (4, 2)
     )
 
-    GalaxyMapParser.parse(input) shouldBe expectedOutput
+    new GalaxyMapParser(1).parse(input) shouldBe expectedOutput
   }
 
   it should "correctly expand space along empty columns" in {
@@ -50,7 +50,7 @@ class GalaxyMapParserSpec extends AnyFlatSpec with Matchers {
       2 -> (2, 4)
     )
 
-    GalaxyMapParser.parse(input) shouldBe expectedOutput
+    new GalaxyMapParser(1).parse(input) shouldBe expectedOutput
   }
 
 
@@ -67,7 +67,7 @@ class GalaxyMapParserSpec extends AnyFlatSpec with Matchers {
       2 -> (4, 4)
     )
 
-    GalaxyMapParser.parse(input) shouldBe expectedOutput
+    new GalaxyMapParser(1).parse(input) shouldBe expectedOutput
   }
 
 }

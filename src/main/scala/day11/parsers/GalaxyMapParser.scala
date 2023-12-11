@@ -2,7 +2,7 @@ package day11.parsers
 
 import utils.ContentParser
 
-object GalaxyMapParser extends ContentParser[ Map[Int, (Int, Int)]] {
+class GalaxyMapParser(spaceExpansionMultiplier: Int = 1) extends ContentParser[ Map[Int, (Int, Int)]] {
   override def parse(content: String):  Map[Int, (Int, Int)] = {
     val matrix = content.split("\n").toList.map(_.toList)
 
@@ -24,8 +24,8 @@ object GalaxyMapParser extends ContentParser[ Map[Int, (Int, Int)]] {
       .toMap
 
     galaxies.map { case (id, (row, col)) =>
-      val numberOfEmptyRowsBefore = getNumberOfEmptyRowsBefore(row)
-      val numberOfEmptyColdBefore = getNumberOfEmptyColsBefore(col)
+      val numberOfEmptyRowsBefore = spaceExpansionMultiplier * getNumberOfEmptyRowsBefore(row)
+      val numberOfEmptyColdBefore = spaceExpansionMultiplier * getNumberOfEmptyColsBefore(col)
       id -> (row + numberOfEmptyRowsBefore, col + numberOfEmptyColdBefore)
     }
   }
