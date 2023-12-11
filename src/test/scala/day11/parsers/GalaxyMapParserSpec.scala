@@ -69,7 +69,7 @@ class GalaxyMapParserSpec extends AnyFlatSpec with Matchers {
     new GalaxyMapParser(1).parse(input) shouldBe expectedOutput
   }
 
-  it should "behave correctly example 1 - no expansion" in {
+  it should "behave correctly in example - no expansion" in {
     val input =
       """...#......
         |.......#..
@@ -97,7 +97,7 @@ class GalaxyMapParserSpec extends AnyFlatSpec with Matchers {
     new GalaxyMapParser(0).parse(input) shouldBe expectedOutput
   }
 
-  it should "behave correctly example 1 - task1 expansion (single)" in {
+  it should "behave correctly in example - task1 expansion (single)" in {
     val input =
       """...#......
         |.......#..
@@ -111,18 +111,47 @@ class GalaxyMapParserSpec extends AnyFlatSpec with Matchers {
         |#...#.....""".stripMargin
 
     val expectedOutput = Map(
-      0 -> (0,     3+1),
-      1 -> (1,     7+1+1),
-      2 -> (2,     0),
-      3 -> (4+1,   6+1+1),
-      4 -> (5+1,   1),
-      5 -> (6+1,   9+1+1+1),
-      6 -> (8+1+1, 7+1+1),
-      7 -> (9+1+1, 0),
-      8 -> (9+1+1, 4+1),
+      0 -> (0, 3 + 1),
+      1 -> (1, 7 + 1 + 1),
+      2 -> (2, 0),
+      3 -> (4 + 1, 6 + 1 + 1),
+      4 -> (5 + 1, 1),
+      5 -> (6 + 1, 9 + 1 + 1 + 1),
+      6 -> (8 + 1 + 1, 7 + 1 + 1),
+      7 -> (9 + 1 + 1, 0),
+      8 -> (9 + 1 + 1, 4 + 1),
     )
 
     new GalaxyMapParser(1).parse(input) shouldBe expectedOutput
+  }
+
+
+  it should "behave correctly in example - task2 expansion (many)" in {
+    val input =
+      """...#......
+        |.......#..
+        |#.........
+        |..........
+        |......#...
+        |.#........
+        |.........#
+        |..........
+        |.......#..
+        |#...#.....""".stripMargin
+
+    val expectedOutput = Map(
+      0 -> (0, 3 + 999999),
+      1 -> (1, 7 + 999999 + 999999),
+      2 -> (2, 0),
+      3 -> (4 + 999999, 6 + 999999 + 999999),
+      4 -> (5 + 999999, 1),
+      5 -> (6 + 999999, 9 + 999999 + 999999 + 999999),
+      6 -> (8 + 999999 + 999999, 7 + 999999 + 999999),
+      7 -> (9 + 999999 + 999999, 0),
+      8 -> (9 + 999999 + 999999, 4 + 999999),
+    )
+
+    new GalaxyMapParser(999999).parse(input) shouldBe expectedOutput
   }
 
 }
