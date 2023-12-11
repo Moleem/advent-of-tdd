@@ -15,4 +15,13 @@ class SumDistancesSpec extends AnyFlatSpec with Matchers {
 
     SumDistances.solve(input) shouldBe 5
   }
+
+  it should "correctly get distance vertically" in {
+    val input = Map(
+      0 -> (0, 0),
+      1 -> (5, 0)
+    )
+
+    SumDistances.solve(input) shouldBe 5
+  }
 }
