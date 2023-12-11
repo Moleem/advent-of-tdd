@@ -53,4 +53,21 @@ class GalaxyMapParserSpec extends AnyFlatSpec with Matchers {
     GalaxyMapParser.parse(input) shouldBe expectedOutput
   }
 
+
+  it should "correctly expand space along both empty rows and columns" in {
+    val input =
+      """#...
+        |....
+        |..#.
+        |...#""".stripMargin
+
+    val expectedOutput = Map(
+      0 -> (0, 0),
+      1 -> (3, 3),
+      2 -> (4, 4)
+    )
+
+    GalaxyMapParser.parse(input) shouldBe expectedOutput
+  }
+
 }
