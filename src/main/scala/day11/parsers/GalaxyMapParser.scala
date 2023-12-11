@@ -8,18 +8,14 @@ object GalaxyMapParser extends ContentParser[ Map[Int, (Int, Int)]] {
   override def parse(content: String):  Map[Int, (Int, Int)] = {
     val matrix = content.split("\n").toList.map(_.toList)
 
-    var galaxyCounter = 0
-    var galaxies = new mutable.HashMap[Int, (Int, Int)]
-
-    matrix.indices.map { row =>
+    matrix.indices.flatMap { row =>
       matrix.head.indices.map { col =>
-        if (matrix(row)(col) == '#') {
-          galaxyCounter += 1
-          galaxies.put(galaxyCounter, (row, col))
-        }
+        (row, col)
       }
     }
-
-    galaxies.toMap
+      .filter { case (row, col) => matrix(row)(col) == '#'}
+      .zipWithIndex
+      .map {case ((row, col), id) => id+1 -> (row, col) }
+      .toMap
   }
 }
