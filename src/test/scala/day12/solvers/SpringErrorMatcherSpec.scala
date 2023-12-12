@@ -12,4 +12,10 @@ class SpringErrorMatcherSpec extends AnyFlatSpec with Matchers {
 
     SpringErrorMatcher.solve(input) shouldBe 1
   }
+
+  it should "return a single possible arrangement if all the error positions are known" in {
+    val input = List(("?#?##?###?", List(1, 2, 3)))
+
+    SpringErrorMatcher.solve(input) shouldBe 1
+  }
 }
