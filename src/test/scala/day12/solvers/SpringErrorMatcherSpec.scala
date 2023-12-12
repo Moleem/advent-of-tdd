@@ -30,4 +30,10 @@ class SpringErrorMatcherSpec extends AnyFlatSpec with Matchers {
 
     SpringErrorMatcher.solve(input) shouldBe 1
   }
+
+  it should "return two possible arrangements if the error can go in two different places" in {
+    val input = List((".??.", List(1)))
+
+    SpringErrorMatcher.solve(input) shouldBe 2
+  }
 }
