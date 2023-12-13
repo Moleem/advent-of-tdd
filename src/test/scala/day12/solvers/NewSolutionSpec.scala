@@ -32,7 +32,10 @@ object NewSolution extends ProblemSolver[String, Long] {
       case (p, gHead::gTail) if p.length < gTail.sum + gTail.size + gHead => 0
       case (p, gHead::gTail) =>
         (0 until (p.length - gTail.sum - gTail.size - gHead + 1)).map { startIndex: Int =>
-          if (!p.substring(startIndex).take(gHead).contains('.') && p.charAt(startIndex+gHead) != '#')
+          if (!p.substring(startIndex).take(gHead).contains('.')
+              && p.charAt(startIndex+gHead) != '#'
+              && !p.substring(0, startIndex).contains('#')
+          )
             countArrangements(p.substring(startIndex+gHead+1), gTail)
           else 0
         }.sum
