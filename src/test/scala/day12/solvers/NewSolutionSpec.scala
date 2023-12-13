@@ -25,6 +25,7 @@ object NewSolution extends ProblemSolver[String, Long] {
       case (p, g :: Nil) if p.length > g =>
         countArrangements(p.take(g), groups) +
         countArrangements(p.tail, groups)
+      case (p, gHead::gTail) if p.length < gTail.sum + gTail.size + gHead => 0
     }
 
 }
