@@ -16,9 +16,10 @@ object NewSolution extends ProblemSolver[String, Long] {
     countArrangements(pattern, groups)
   }
 
-  private def countArrangements(pattern: String, groups: List[Int], resultAccumulator: Long = 0): Long = {
-    ???
-  }
+  private def countArrangements(pattern: String, groups: List[Int], resultAccumulator: Long = 0): Long =
+    (pattern, groups) match {
+      case (p, Nil) if !p.contains('#') => 1
+    }
 
 }
 
