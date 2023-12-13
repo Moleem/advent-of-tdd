@@ -26,6 +26,12 @@ object NewSolution extends ProblemSolver[String, Long] {
         countArrangements(p.take(g), groups) +
         countArrangements(p.tail, groups)
       case (p, gHead::gTail) if p.length < gTail.sum + gTail.size + gHead => 0
+      case (p, gHead::gTail) =>
+        (0 until (p.length - gTail.sum - gTail.size - gHead + 1)).map { startIndex: Int =>
+          if (!p.substring(startIndex).take(gHead).contains('.'))
+            countArrangements(p.substring(startIndex+gHead+1), gTail)
+          else 0
+        }.sum
     }
 
 }
@@ -81,4 +87,5 @@ class NewSolutionSpec extends AnyFlatSpec with Matchers {
     NewSolution.solve("#.?# 1,2") shouldBe 1
     NewSolution.solve("#.## 1,2") shouldBe 1
   }
+
 }
