@@ -20,6 +20,8 @@ object NewSolution extends ProblemSolver[String, Long] {
     (pattern, groups) match {
       case (p, Nil) if !p.contains('#') => 1
       case (p, g::Nil) if p.length == g && !p.contains('.') => 1
+      case (p, g::Nil) if p.length < g => 0
+      case (p, g::Nil) if p.split(""".""").forall(_.length < g) => 0
     }
 
 }
