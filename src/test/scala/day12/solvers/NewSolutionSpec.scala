@@ -2,7 +2,7 @@ package day12.solvers
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import utils.ProblemSolver
+import utils.{MyLittleFileReader, ProblemSolver}
 
 import scala.util.Try
 
@@ -14,9 +14,7 @@ object NewSolution extends ProblemSolver[String, Long] {
       val Array(pattern, groupsStr) = line.split(" ", 2)
       val groups = Try(groupsStr.split(",").map(_.toInt).toList).getOrElse(List.empty[Int])
 
-      val x = countArrangements(pattern, groups)
-      println(s"$line -> $pattern, ${groups.mkString("(", ",", ")")} -> $x")
-      x
+      countArrangements(pattern, groups)
     }.sum
   }
 
@@ -53,6 +51,10 @@ class NewSolutionSpec extends AnyFlatSpec with Matchers {
     NewSolution.solve("? ") shouldBe 1
     NewSolution.solve(". ") shouldBe 1
     NewSolution.solve(".? ") shouldBe 1
+  }
+
+  it should "get arrangement count 0 if there are no errors expected, but there are errors present" in {
+    NewSolution.solve("# ") shouldBe 0
   }
 
   it should "get arrangement count 1 if there are errors expected exactly fit the available space" in {
@@ -121,5 +123,9 @@ class NewSolutionSpec extends AnyFlatSpec with Matchers {
 
   it should "work in example case (6)" in {
     NewSolution.solve("?###???????? 3,2,1") shouldBe 10
+  }
+
+  it should "solve task1" in {
+    NewSolution.solve(MyLittleFileReader.readFile("/day12/input-1.txt")) shouldBe 6852
   }
 }
