@@ -1,9 +1,7 @@
 package day13
 
-import day00.parsers._
-import day00.solvers._
-import day13.parsers.MirrorFinder
-import utils.{PrintSolution, ProblemSolver}
+import day13.parsers.{MirrorFinder, SmudgeMirrorFinder}
+import utils.PrintSolution
 
 object Runner extends App {
 
@@ -17,7 +15,7 @@ object Runner extends App {
 
   PrintSolution(
     inputFileName = s"/$dayNum/input-2.txt",
-    contentParser = MirrorFinder,
+    contentParser = SmudgeMirrorFinder,
     problemSolver = (input: Long) => input
   )
 
