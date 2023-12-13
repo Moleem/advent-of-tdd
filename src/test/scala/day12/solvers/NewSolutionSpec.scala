@@ -28,11 +28,20 @@ class NewSolutionSpec extends AnyFlatSpec with Matchers {
 
   behavior of NewSolution.getClass.getSimpleName
 
-  it should "count a single possible arrangement if there are no errors expected, and nor present" in {
+  it should "get arrangement count if there are no errors expected, and nor present" in {
     NewSolution.solve(" ") shouldBe 1
     NewSolution.solve("? ") shouldBe 1
     NewSolution.solve(". ") shouldBe 1
     NewSolution.solve(".? ") shouldBe 1
+  }
+
+  it should "get arrangement count if there errors expected exactly fit the available space" in {
+    NewSolution.solve("? 1") shouldBe 1
+    NewSolution.solve("# 1") shouldBe 1
+    NewSolution.solve("?? 2") shouldBe 1
+    NewSolution.solve("?# 2") shouldBe 1
+    NewSolution.solve("#? 2") shouldBe 1
+    NewSolution.solve("## 2") shouldBe 1
   }
 
 }
