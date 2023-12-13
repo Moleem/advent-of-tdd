@@ -68,5 +68,12 @@ class NewSolutionSpec extends AnyFlatSpec with Matchers {
     NewSolution.solve("?.? 1") shouldBe 2
   }
 
-
+  it should "get arrangement count 1 even if there are multiple errors expected" in {
+    NewSolution.solve("???? 1,2") shouldBe 1
+    NewSolution.solve("?.?? 1,2") shouldBe 1
+    NewSolution.solve("?.#? 1,2") shouldBe 1
+    NewSolution.solve("#.#? 1,2") shouldBe 1
+    NewSolution.solve("#.?# 1,2") shouldBe 1
+    NewSolution.solve("#.## 1,2") shouldBe 1
+  }
 }
