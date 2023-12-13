@@ -14,7 +14,9 @@ object NewSolution extends ProblemSolver[String, Long] {
       val Array(pattern, groupsStr) = line.split(" ", 2)
       val groups = Try(groupsStr.split(",").map(_.toInt).toList).getOrElse(List.empty[Int])
 
-      countArrangements(pattern, groups)
+      val x = countArrangements(pattern, groups)
+      println(s"$line -> $pattern, ${groups.mkString("(", ",", ")")} -> $x")
+      x
     }.sum
   }
 
@@ -30,7 +32,7 @@ object NewSolution extends ProblemSolver[String, Long] {
       case (p, gHead::gTail) if p.length < gTail.sum + gTail.size + gHead => 0
       case (p, gHead::gTail) =>
         (0 until (p.length - gTail.sum - gTail.size - gHead + 1)).map { startIndex: Int =>
-          if (!p.substring(startIndex).take(gHead).contains('.'))
+          if (!p.substring(startIndex).take(gHead).contains('.') && p.charAt(startIndex+gHead) != '#')
             countArrangements(p.substring(startIndex+gHead+1), gTail)
           else 0
         }.sum
@@ -108,5 +110,13 @@ class NewSolutionSpec extends AnyFlatSpec with Matchers {
                   |?###???????? 3,2,1""".stripMargin
 
     NewSolution.solve(input) shouldBe 21
+  }
+
+  it should "work in example case (3)" in {
+    NewSolution.solve("?#?#?#?#?#?#?#? 1,3,1,6") shouldBe 1
+  }
+
+  it should "work in example case (6)" in {
+    NewSolution.solve("?###???????? 3,2,1") shouldBe 10
   }
 }
