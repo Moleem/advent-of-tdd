@@ -1,9 +1,7 @@
 package day12
 
-import day00.parsers._
-import day00.solvers._
 import day12.parsers.SpringMapParser
-import day12.solvers.SpringErrorMatcher
+import day12.solvers.{SpringErrorMatcher, SpringMapExpander}
 import utils.PrintSolution
 
 object Runner extends App {
@@ -16,10 +14,10 @@ object Runner extends App {
     problemSolver = SpringErrorMatcher
   )
 
-//  PrintSolution(
-//    inputFileName = s"/$dayNum/input-2.txt",
-//    contentParser = DummyTask2Parser,
-//    problemSolver = DummyTask2Solver
-//  )
+  PrintSolution(
+    inputFileName = s"/$dayNum/input-2.txt",
+    contentParser = SpringMapParser,
+    problemSolver = SpringMapExpander andThen SpringErrorMatcher
+  )
 
 }

@@ -2,44 +2,52 @@ package day12.solvers
 
 import utils.ProblemSolver
 
-import scala.annotation.tailrec
+import scala.collection.mutable
 
-object SpringErrorMatcher extends ProblemSolver[List[(String, List[Int])], Int] {
+object SpringErrorMatcher extends ProblemSolver[List[(String, List[Int])], Long] {
 
-  private def getAllPossibleValues(pattern: String) = {
-    @tailrec
-    def helper(toBeChecked: List[String], results: List[String]): List[String] = {
-      toBeChecked match {
-        case Nil => results
-        case head :: tail if !head.contains("?") =>
-          helper(tail, head :: results)
-        case head :: tail if head.contains("?") =>
-          val indexOfUnknown = head.indexOf("?")
-          val withGood = head.substring(0, indexOfUnknown) + "." + head.substring(indexOfUnknown+1)
-          val withBad = head.substring(0, indexOfUnknown) + "#" + head.substring(indexOfUnknown+1)
-          helper(List(withGood, withBad) ++ tail, results)
+  private val cache = new mutable.HashMap[(String, List[Int]), Long]()
+
+  override def solve(input: List[(String, List[Int])]): Long =
+    input.map { case (pattern, nums) => getArrangementCount(pattern, nums) }.sum
+
+  private def getArrangementCount(pattern: String, groups: List[Int]): Long = {
+    if (cache.contains((pattern, groups))) cache((pattern, groups))
+    else {
+      if (groups.isEmpty && !pattern.contains("#")) 1L
+      else if (groups.isEmpty && pattern.contains("#")) 0L
+      else {
+        var res = 0L
+
+        val firstGroup = groups.head
+        val remainingGroups = groups.tail
+        var shouldRun = true
+        val expectedGroupEnd = pattern.length - remainingGroups.sum - remainingGroups.length - firstGroup + 1
+
+        (0 until expectedGroupEnd).foreach { i =>
+          if (pattern.substring(0, i).contains('#')) {
+            shouldRun = false
+          } else {
+            if (shouldRun) {
+              val possibleGroupEnd = i + firstGroup
+              val fitsThePatternSize = possibleGroupEnd <= pattern.length
+              val hasNoGood = !pattern.substring(i, possibleGroupEnd).contains('.')
+              val isNotFollowedByBad = pattern.length < possibleGroupEnd + 1 || pattern.toList(possibleGroupEnd) != '#'
+
+              if (fitsThePatternSize && hasNoGood && isNotFollowedByBad) {
+                if (pattern.length >= possibleGroupEnd + 1)
+                  res = res + getArrangementCount(pattern.substring(possibleGroupEnd + 1), remainingGroups)
+                else
+                 res = res + getArrangementCount("", remainingGroups)
+              }
+            }
+          }
+        }
+
+        cache.put((pattern, groups), res)
+        res
       }
     }
-
-    helper(List(pattern), List.empty)
   }
 
-  private def getErrorClusters(s: String): List[Int] =
-    s.split("\\.").toList.filterNot(_.isEmpty).map(_.length)
-
-  /**
-   *
-   * .#.?.
-   * .#..., .#.#.
-   *
-   *
-   * */
-  override def solve(input: List[(String, List[Int])]): Int = {
-    input
-      .map { case (pattern, nums) =>
-        val possibleValues = getAllPossibleValues(pattern)
-        val errorClusters = possibleValues.map(getErrorClusters)
-        errorClusters.count(_ == nums)
-      }.sum
-  }
 }
