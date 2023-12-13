@@ -4,13 +4,15 @@ import utils.ContentParser
 
 object MirrorFinder extends ContentParser[Long] {
   override def parse(content: String): Long = {
-    val matrix = content.split("\n").map(_.toList).toList
+    content.split("\n\n").map { contentBlock =>
+      val matrix = contentBlock.split("\n").map(_.toList).toList
 
-    val rows = matrix.map(_.mkString)
-    val cols = matrix.transpose.map(_.mkString)
+      val rows = matrix.map(_.mkString)
+      val cols = matrix.transpose.map(_.mkString)
 
-    findMirror(rows)*100 + findMirror(cols)
-  }
+      findMirror(rows) * 100 + findMirror(cols)
+    }
+  }.sum
 
   private def findMirror(lines: List[String]): Int =
     lines.indices.find { rowId =>
