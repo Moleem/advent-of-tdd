@@ -25,7 +25,6 @@ object NewSolution extends ProblemSolver[String, Long] {
       case (p, g :: Nil) if p.length > g =>
         countArrangements(p.take(g), groups) +
         countArrangements(p.tail, groups)
-
     }
 
 }
@@ -66,6 +65,11 @@ class NewSolutionSpec extends AnyFlatSpec with Matchers {
     NewSolution.solve("?#..?? 2") shouldBe 2
     NewSolution.solve("?? 1") shouldBe 2
     NewSolution.solve("?.? 1") shouldBe 2
+  }
+
+  it should "get arrangement count 0 if there are multiple errors expected, but they cannot fit" in {
+    NewSolution.solve("??? 1,2") shouldBe 0
+    NewSolution.solve("???? 1,1,1") shouldBe 0
   }
 
   it should "get arrangement count 1 even if there are multiple errors expected" in {
