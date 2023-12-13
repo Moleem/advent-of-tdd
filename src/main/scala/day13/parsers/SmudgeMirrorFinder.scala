@@ -17,10 +17,9 @@ object SmudgeMirrorFinder extends ContentParser[Long] {
 
   private def findMirror(lines: List[String]): Int =
     lines.indices.find { rowId =>
-      val a = lines.take(rowId).reverse
-      val b = lines.takeRight(lines.length - rowId)
-      val pairs = a.zip(b)
+      val a = lines.take(rowId).reverse.mkString
+      val b = lines.takeRight(lines.length - rowId).mkString
 
-      pairs.nonEmpty && pairs.forall { case (a, b) => a == b }
+      a.nonEmpty && b.nonEmpty && a.zip(b).count { case (ca, cb) => ca != cb} == 1
     }.getOrElse(0)
 }
