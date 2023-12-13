@@ -56,4 +56,10 @@ class NewSolutionSpec extends AnyFlatSpec with Matchers {
     NewSolution.solve(".# 2") shouldBe 0
   }
 
+  it should "get arrangement count 2 if there are errors expected that fit the available space in two ways" in {
+    NewSolution.solve("??? 2") shouldBe 2
+    NewSolution.solve("?#? 2") shouldBe 2
+    NewSolution.solve("?? 1") shouldBe 2
+  }
+
 }
