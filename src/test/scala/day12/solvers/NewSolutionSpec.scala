@@ -21,6 +21,7 @@ object NewSolution extends ProblemSolver[String, Long] {
   private def countArrangements(pattern: String, groups: List[Int]): Long =
     (pattern, groups) match {
       case (p, Nil) if !p.contains('#') => 1
+      case (p, Nil) if  p.contains('#') => 0
       case (p, g::Nil) if p.length == g && !p.contains('.') => 1
       case (p, g::Nil) if p.length < g => 0
       case (p, g::Nil) if p.contains('.') && p.split("\\.").forall(_.length < g) => 0
