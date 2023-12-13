@@ -88,4 +88,23 @@ class NewSolutionSpec extends AnyFlatSpec with Matchers {
     NewSolution.solve("#.## 1,2") shouldBe 1
   }
 
+  it should "sum arrangement counts" in {
+    val input =
+      """? 1
+        |?? 1
+        |??? 1""".stripMargin
+
+    NewSolution.solve(input) shouldBe 6
+  }
+
+  it should "solve the example task" in {
+    val input = """???.### 1,1,3
+                  |.??..??...?##. 1,1,3
+                  |?#?#?#?#?#?#?#? 1,3,1,6
+                  |????.#...#... 4,1,1
+                  |????.######..#####. 1,6,5
+                  |?###???????? 3,2,1""".stripMargin
+
+    NewSolution.solve(input) shouldBe 21
+  }
 }
