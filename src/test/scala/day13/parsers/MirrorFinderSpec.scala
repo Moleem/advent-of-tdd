@@ -33,4 +33,25 @@ class MirrorFinderSpec extends AnyFlatSpec with Matchers {
     MirrorFinder.parse(input) shouldBe 400
   }
 
+  it should "sum results" in {
+    val input =
+      """#.##..##.
+        |..#.##.#.
+        |##......#
+        |##......#
+        |..#.##.#.
+        |..##..##.
+        |#.#.##.#.
+        |
+        |#...##..#
+        |#....#..#
+        |..##..###
+        |#####.##.
+        |#####.##.
+        |..##..###
+        |#....#..#""".stripMargin
+
+    MirrorFinder.parse(input) shouldBe 405
+  }
+
 }
