@@ -10,7 +10,7 @@ import scala.util.Try
 object NewSolution extends ProblemSolver[String, Long] {
 
   override def solve(input: String): Long = {
-    val Array(pattern, groupsStr) = input.split(" ", 2).map(_.toString)
+    val Array(pattern, groupsStr) = input.split(" ", 2)
     val groups = Try(groupsStr.split(",").map(_.toInt).toList).getOrElse(List.empty[Int])
 
     countArrangements(pattern, groups)
@@ -19,6 +19,7 @@ object NewSolution extends ProblemSolver[String, Long] {
   private def countArrangements(pattern: String, groups: List[Int], resultAccumulator: Long = 0): Long =
     (pattern, groups) match {
       case (p, Nil) if !p.contains('#') => 1
+      case (p, g::Nil) if p.length == g && !p.contains('.') => 1
     }
 
 }
