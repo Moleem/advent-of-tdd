@@ -10,10 +10,12 @@ import scala.util.Try
 object NewSolution extends ProblemSolver[String, Long] {
 
   override def solve(input: String): Long = {
-    val Array(pattern, groupsStr) = input.split(" ", 2)
-    val groups = Try(groupsStr.split(",").map(_.toInt).toList).getOrElse(List.empty[Int])
+    input.split("\n").map{ line =>
+      val Array(pattern, groupsStr) = line.split(" ", 2)
+      val groups = Try(groupsStr.split(",").map(_.toInt).toList).getOrElse(List.empty[Int])
 
-    countArrangements(pattern, groups)
+      countArrangements(pattern, groups)
+    }.sum
   }
 
   private def countArrangements(pattern: String, groups: List[Int]): Long =
