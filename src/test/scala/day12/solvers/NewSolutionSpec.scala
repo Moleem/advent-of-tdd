@@ -16,12 +16,16 @@ object NewSolution extends ProblemSolver[String, Long] {
     countArrangements(pattern, groups)
   }
 
-  private def countArrangements(pattern: String, groups: List[Int], resultAccumulator: Long = 0): Long =
+  private def countArrangements(pattern: String, groups: List[Int]): Long =
     (pattern, groups) match {
       case (p, Nil) if !p.contains('#') => 1
       case (p, g::Nil) if p.length == g && !p.contains('.') => 1
       case (p, g::Nil) if p.length < g => 0
-      case (p, g::Nil) if p.split(""".""").forall(_.length < g) => 0
+      case (p, g::Nil) if p.contains('.') && p.split("\\.").forall(_.length < g) => 0
+      case (p, g :: Nil) if p.length > g =>
+        countArrangements(p.take(g), groups) +
+        countArrangements(p.tail, groups)
+
     }
 
 }
@@ -60,6 +64,7 @@ class NewSolutionSpec extends AnyFlatSpec with Matchers {
     NewSolution.solve("??? 2") shouldBe 2
     NewSolution.solve("?#? 2") shouldBe 2
     NewSolution.solve("?? 1") shouldBe 2
+    NewSolution.solve("?.? 1") shouldBe 2
   }
 
 }
