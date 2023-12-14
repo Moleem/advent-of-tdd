@@ -1,6 +1,6 @@
 package day14
 
-import day14.solvers.{LoadCalculator, PlatformTilter}
+import day14.solvers.{AdvancedPlatformTilter, LoadCalculator, PlatformTilter}
 import utils.PrintSolution
 import utils.parsers.StringReader
 
@@ -14,10 +14,10 @@ object Runner extends App {
     problemSolver = PlatformTilter andThen LoadCalculator
   )
 
-//  PrintSolution(
-//    inputFileName = s"/$dayNum/input-2.txt",
-//    contentParser = DummyTask2Parser,
-//    problemSolver = DummyTask2Solver
-//  )
+  PrintSolution(
+    inputFileName = s"/$dayNum/input-2.txt",
+    contentParser = StringReader,
+    problemSolver = new AdvancedPlatformTilter(List('N', 'W', 'S', 'E'), 1000000000) andThen LoadCalculator
+  )
 
 }
