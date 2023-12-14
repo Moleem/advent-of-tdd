@@ -22,15 +22,9 @@ class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) exten
     var solutionFound = false
 
     (0 until cycleCount).foreach { i =>
-      if (100*i % cycleCount == 0) {
-        println(s"Round $i/$cycleCount")
-      }
-
       if (!solutionFound) {
         val beforeState = backToString(stableStones, rollingStones, rowCount, colCount)
         if (!cache.contains(beforeState)) {
-          println(s"Not in cache, calculating... $i")
-
           cycleDirections.foreach {
             case 'N' => tiltNorth(stableStones, rollingStones, rowCount, colCount)
             case 'W' => tiltWest(stableStones, rollingStones, rowCount, colCount)
@@ -46,9 +40,6 @@ class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) exten
           val loopStart = cache(backToString(stableStones, rollingStones, rowCount, colCount))
           val loopLength = i-loopStart
           val targetModulo = (cycleCount - loopStart) % loopLength + loopStart
-          println(s"i: $i")
-          println(s"LoopStart: $loopStart")
-          println(s"LoopLength: $loopLength")
 
           solution = cache.find { case (key, id) => id == targetModulo }.get._1
         }
