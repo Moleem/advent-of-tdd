@@ -20,8 +20,9 @@ class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) exten
     var (stableStones, rollingStones) = getStableAndRollingStones(matrix)
 
     var solutionFound = false
+    var i = 0
 
-    (0 until cycleCount).foreach { i =>
+    while (i<cycleCount && !solutionFound) {
       if (!solutionFound) {
         val beforeState = backToString(stableStones, rollingStones, rowCount, colCount)
         if (!cache.contains(beforeState)) {
@@ -44,6 +45,8 @@ class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) exten
           solution = cache.find { case (key, id) => id == targetModulo }.get._1
         }
       }
+
+      i += 1
     }
 
     solution
