@@ -4,6 +4,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import utils.ProblemSolver
 
+import scala.collection.immutable.List
 import scala.collection.mutable.ListBuffer
 
 case class Stone(var row: Int, var col: Int)
@@ -51,21 +52,37 @@ class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) exten
     (stableStones.toList, rollingStones.toList)
   }
 
-  private def tiltNorth(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit = {
-    rollingStones.foreach(stone => stone.row = 0)
-  }
+  private def tiltNorth(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit =
+    rollingStones.foreach { stone =>
+      stone.row = (List(-1) ++ stableStones.map(_.row))
+        .filter(_ < stone.row)
+        .map(_+1)
+        .max
+    }
 
-  private def tiltWest(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit = {
-    rollingStones.foreach(stone => stone.col = 0)
-  }
+  private def tiltWest(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit =
+    rollingStones.foreach { stone =>
+      stone.col = (List(-1) ++ stableStones.map(_.col))
+        .filter(_ < stone.col)
+        .map(_ + 1)
+        .max
+    }
 
-  private def tiltSouth(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit = {
-    rollingStones.foreach(stone => stone.row = rowCount - 1)
-  }
+  private def tiltSouth(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit =
+    rollingStones.foreach { stone =>
+      stone.row = (List(rowCount) ++ stableStones.map(_.row))
+        .filter(_ > stone.row)
+        .map(_ - 1)
+        .min
+    }
 
-  private def tiltEast(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit = {
-    rollingStones.foreach(stone => stone.col = colCount - 1)
-  }
+  private def tiltEast(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit =
+    rollingStones.foreach { stone =>
+      stone.col = (List(colCount) ++ stableStones.map(_.col))
+        .filter(_ > stone.col)
+        .map(_ - 1)
+        .min
+    }
 
 }
 
@@ -159,7 +176,7 @@ class AdvancedPlatformTilterSpec extends AnyFlatSpec with Matchers {
 
   it should "be able to move a single stone south when there is an obstacle" in {
     val input =
-      """...
+      """.O.
         |...
         |.#.""".stripMargin
 
@@ -174,7 +191,7 @@ class AdvancedPlatformTilterSpec extends AnyFlatSpec with Matchers {
   it should "be able to move a single stone east when there is an obstacle" in {
     val input =
       """...
-        |..#
+        |O.#
         |...""".stripMargin
 
     val expectedOutput =
