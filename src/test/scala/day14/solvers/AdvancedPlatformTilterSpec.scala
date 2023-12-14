@@ -20,6 +20,7 @@ class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) exten
     cycleDirections.head match {
       case 'N' => tiltNorth(stableStones, rollingStones, rowCount, colCount)
       case 'W' => tiltWest(stableStones, rollingStones, rowCount, colCount)
+      case 'S' => tiltSouth(stableStones, rollingStones, rowCount, colCount)
     }
 
     (0 until rowCount).map {row =>
@@ -55,6 +56,10 @@ class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) exten
 
   private def tiltWest(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit = {
     rollingStones.foreach(stone => stone.col = 0)
+  }
+
+  private def tiltSouth(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit = {
+    rollingStones.foreach(stone => stone.row = rowCount-1)
   }
 
 }
