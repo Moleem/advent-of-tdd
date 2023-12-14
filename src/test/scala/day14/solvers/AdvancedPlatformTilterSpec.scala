@@ -128,4 +128,60 @@ class AdvancedPlatformTilterSpec extends AnyFlatSpec with Matchers {
 
     new AdvancedPlatformTilter(List('E'), 1).solve(input) shouldBe expectedOutput
   }
+
+  it should "be able to move a single stone north when there is an obstacle" in {
+    val input =
+      """.#.
+        |...
+        |.O.""".stripMargin
+
+    val expectedOutput =
+      """.#.
+        |.O.
+        |...""".stripMargin
+
+    new AdvancedPlatformTilter(List('N'), 1).solve(input) shouldBe expectedOutput
+  }
+
+  it should "be able to move a single stone west when there is an obstacle" in {
+    val input =
+      """...
+        |#.O
+        |...""".stripMargin
+
+    val expectedOutput =
+      """...
+        |#O.
+        |...""".stripMargin
+
+    new AdvancedPlatformTilter(List('W'), 1).solve(input) shouldBe expectedOutput
+  }
+
+  it should "be able to move a single stone south when there is an obstacle" in {
+    val input =
+      """...
+        |...
+        |.#.""".stripMargin
+
+    val expectedOutput =
+      """...
+        |.O.
+        |.#.""".stripMargin
+
+    new AdvancedPlatformTilter(List('S'), 1).solve(input) shouldBe expectedOutput
+  }
+
+  it should "be able to move a single stone east when there is an obstacle" in {
+    val input =
+      """...
+        |..#
+        |...""".stripMargin
+
+    val expectedOutput =
+      """...
+        |.O#
+        |...""".stripMargin
+
+    new AdvancedPlatformTilter(List('E'), 1).solve(input) shouldBe expectedOutput
+  }
 }
