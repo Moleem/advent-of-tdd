@@ -53,33 +53,45 @@ class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) exten
   }
 
   private def tiltNorth(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit =
-    rollingStones.foreach { stone =>
-      stone.row = (List(-1) ++ stableStones.map(_.row))
-        .filter(_ < stone.row)
-        .map(_+1)
+    rollingStones.sortBy(_.row).foreach { stone =>
+      val positionOfWall = -1
+      val positionsOfStableStonesAbove = stableStones.filter(_.col == stone.col).map(_.row)
+      val positionsOfRollingStonesAbove = rollingStones.filter(_.col == stone.col).map(_.row)
+      val relevantPositions = positionOfWall :: positionsOfStableStonesAbove ++ positionsOfRollingStonesAbove
+      stone.row = relevantPositions.filter(_ < stone.row)
+        .map(_ + 1)
         .max
     }
 
   private def tiltWest(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit =
-    rollingStones.foreach { stone =>
-      stone.col = (List(-1) ++ stableStones.map(_.col))
-        .filter(_ < stone.col)
+    rollingStones.sortBy(_.col).foreach { stone =>
+      val positionOfWall = -1
+      val positionsOfStableStonesBefore = stableStones.filter(_.row == stone.row).map(_.col)
+      val positionsOfRollingStonesBefore = rollingStones.filter(_.row == stone.row).map(_.col)
+      val relevantPositions = positionOfWall :: positionsOfStableStonesBefore ++ positionsOfRollingStonesBefore
+      stone.col = relevantPositions.filter(_ < stone.col)
         .map(_ + 1)
         .max
     }
 
   private def tiltSouth(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit =
-    rollingStones.foreach { stone =>
-      stone.row = (List(rowCount) ++ stableStones.map(_.row))
-        .filter(_ > stone.row)
+    rollingStones.sortBy(_.row).reverse.foreach { stone =>
+      val positionOfWall = rowCount
+      val positionsOfStableStonesBelow = stableStones.filter(_.col == stone.col).map(_.row)
+      val positionsOfRollingStonesBelow = rollingStones.filter(_.col == stone.col).map(_.row)
+      val relevantPositions = positionOfWall :: positionsOfStableStonesBelow ++ positionsOfRollingStonesBelow
+      stone.row = relevantPositions.filter(_ > stone.row)
         .map(_ - 1)
         .min
     }
 
   private def tiltEast(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit =
-    rollingStones.foreach { stone =>
-      stone.col = (List(colCount) ++ stableStones.map(_.col))
-        .filter(_ > stone.col)
+    rollingStones.sortBy(_.col).reverse.foreach { stone =>
+      val positionOfWall = colCount
+      val positionsOfStableStonesAfter = stableStones.filter(_.row == stone.row).map(_.col)
+      val positionsOfRollingStonesAfter = rollingStones.filter(_.row == stone.row).map(_.col)
+      val relevantPositions = positionOfWall :: positionsOfStableStonesAfter ++ positionsOfRollingStonesAfter
+      stone.col = relevantPositions.filter(_ > stone.col)
         .map(_ - 1)
         .min
     }
