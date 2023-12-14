@@ -21,6 +21,7 @@ class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) exten
       case 'N' => tiltNorth(stableStones, rollingStones, rowCount, colCount)
       case 'W' => tiltWest(stableStones, rollingStones, rowCount, colCount)
       case 'S' => tiltSouth(stableStones, rollingStones, rowCount, colCount)
+      case 'E' => tiltEast(stableStones, rollingStones, rowCount, colCount)
     }
 
     (0 until rowCount).map {row =>
@@ -59,7 +60,11 @@ class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) exten
   }
 
   private def tiltSouth(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit = {
-    rollingStones.foreach(stone => stone.row = rowCount-1)
+    rollingStones.foreach(stone => stone.row = rowCount - 1)
+  }
+
+  private def tiltEast(stableStones: List[Stone], rollingStones: List[Stone], rowCount: Int, colCount: Int): Unit = {
+    rollingStones.foreach(stone => stone.col = colCount - 1)
   }
 
 }
@@ -108,5 +113,19 @@ class AdvancedPlatformTilterSpec extends AnyFlatSpec with Matchers {
         |.O.""".stripMargin
 
     new AdvancedPlatformTilter(List('S'), 1).solve(input) shouldBe expectedOutput
+  }
+
+  it should "be able to move a single stone east when there are no obstacles" in {
+    val input =
+      """...
+        |.O.
+        |...""".stripMargin
+
+    val expectedOutput =
+      """...
+        |..O
+        |...""".stripMargin
+
+    new AdvancedPlatformTilter(List('E'), 1).solve(input) shouldBe expectedOutput
   }
 }
