@@ -5,7 +5,7 @@ import org.scalatest.matchers.should.Matchers
 import utils.ContentParser
 
 object StringReader extends ContentParser[String] {
-  override def parse(content: String): String = ???
+  override def parse(content: String): String = content
 }
 
 class StringReaderSpec extends AnyFlatSpec with Matchers {
