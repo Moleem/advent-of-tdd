@@ -263,7 +263,7 @@ class AdvancedPlatformTilterSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "be able to move multiple stones east" in {
-        val input =
+    val input =
       """OO...
         |O.O.#""".stripMargin
 
@@ -272,5 +272,19 @@ class AdvancedPlatformTilterSpec extends AnyFlatSpec with Matchers {
         |..OO#""".stripMargin
 
     new AdvancedPlatformTilter(List('E'), 1).solve(input) shouldBe expectedOutput
+  }
+
+  it should "be able to move a stone around" in {
+    val input =
+      """...
+        |.O.
+        |...""".stripMargin
+
+    val expectedOutput =
+      """...
+        |...
+        |..O""".stripMargin
+
+    new AdvancedPlatformTilter(List('N', 'W', 'S', 'E'), 1).solve(input) shouldBe expectedOutput
   }
 }
