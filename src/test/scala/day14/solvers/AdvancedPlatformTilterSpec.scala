@@ -18,7 +18,7 @@ class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) exten
 
     val (stableStones, rollingStones) = getStableAndRollingStones(matrix)
 
-    cycleDirections.head match {
+    cycleDirections.foreach {
       case 'N' => tiltNorth(stableStones, rollingStones, rowCount, colCount)
       case 'W' => tiltWest(stableStones, rollingStones, rowCount, colCount)
       case 'S' => tiltSouth(stableStones, rollingStones, rowCount, colCount)
