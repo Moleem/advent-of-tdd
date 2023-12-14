@@ -18,11 +18,13 @@ class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) exten
 
     val (stableStones, rollingStones) = getStableAndRollingStones(matrix)
 
-    cycleDirections.foreach {
-      case 'N' => tiltNorth(stableStones, rollingStones, rowCount, colCount)
-      case 'W' => tiltWest(stableStones, rollingStones, rowCount, colCount)
-      case 'S' => tiltSouth(stableStones, rollingStones, rowCount, colCount)
-      case 'E' => tiltEast(stableStones, rollingStones, rowCount, colCount)
+    (0 until cycleCount).foreach { _ =>
+      cycleDirections.foreach {
+        case 'N' => tiltNorth(stableStones, rollingStones, rowCount, colCount)
+        case 'W' => tiltWest(stableStones, rollingStones, rowCount, colCount)
+        case 'S' => tiltSouth(stableStones, rollingStones, rowCount, colCount)
+        case 'E' => tiltEast(stableStones, rollingStones, rowCount, colCount)
+      }
     }
 
     (0 until rowCount).map {row =>
@@ -286,5 +288,23 @@ class AdvancedPlatformTilterSpec extends AnyFlatSpec with Matchers {
         |..O""".stripMargin
 
     new AdvancedPlatformTilter(List('N', 'W', 'S', 'E'), 1).solve(input) shouldBe expectedOutput
+  }
+
+  it should "be able to move a stone around in multiple cycles" in {
+    val input =
+      """#...#.
+        |..O...
+        |.....#
+        |.#....
+        |......""".stripMargin
+
+    val expectedOutput =
+      """#...#.
+        |......
+        |.....#
+        |.#....
+        |.....O""".stripMargin
+
+    new AdvancedPlatformTilter(List('N', 'W', 'S', 'E'), 2).solve(input) shouldBe expectedOutput
   }
 }
