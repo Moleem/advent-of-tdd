@@ -8,7 +8,7 @@ import scala.collection.mutable.ListBuffer
 
 class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) extends ProblemSolver[String, String] {
 
-  private var cache = new mutable.HashMap[String, Int]()
+  private val cache = new mutable.HashMap[String, Int]()
 
   override def solve(input: String): String = {
     val matrix = input.split("\n").map(_.toList).toList
@@ -17,7 +17,7 @@ class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) exten
 
     var solution = ""
 
-    var (stableStones, rollingStones) = getStableAndRollingStones(matrix)
+    val (stableStones, rollingStones) = getStableAndRollingStones(matrix)
 
     var solutionFound = false
     var i = 0
