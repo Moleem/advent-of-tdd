@@ -49,4 +49,12 @@ class BoxerSpec extends AnyFlatSpec with Matchers {
     Boxer.solve(input) shouldBe expectedResult
   }
 
+  it should "correctly insert a lens into an existing bucket" in {
+    val input = "rn=1,cm=2"
+    val expectedResult = Map(
+      0 -> Queue(Lens("rn", 1), Lens("cm", 2))
+    )
+    Boxer.solve(input) shouldBe expectedResult
+  }
+
 }
