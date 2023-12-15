@@ -17,7 +17,11 @@ object Boxer extends ProblemSolver[String, Map[Int, List[Lens]]] {
 
         boxes.updatedWith(index) {
           case None => Some(List(Lens(label, focalLength)))
-          case Some(existingBoxContent) => Some(existingBoxContent :+ Lens(label, focalLength))
+          case Some(existingBoxContent) =>
+            if (existingBoxContent.exists(_.label == label))
+              Some(existingBoxContent.map(lens => if (lens.label == label) lens.copy(focalLength = focalLength) else lens))
+            else
+              Some(existingBoxContent :+ Lens(label, focalLength))
         }
       } else {
         val label = operation.stripSuffix("-")
