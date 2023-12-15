@@ -1,11 +1,9 @@
 package day14.solvers
 
-import day14.model.Stone
 import utils.ProblemSolver
 
 import scala.annotation.tailrec
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
 
 class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) extends ProblemSolver[String, String] {
 
@@ -27,50 +25,63 @@ class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) exten
       } else {
         cache.put(input, cycleId)
 
-        val cycleOutput = runCycle(input)
-        getCycleOutput(cycleId+1, cycleOutput)
+        getCycleOutput(cycleId+1, input.tiltInCycle(cycleDirections))
       }
 
     }
   }
 
-  private def runCycle(input: String): String = {
-    cycleDirections.foldLeft(input) { case (s, dir) =>
-      dir match {
-        case 'N' => tiltNorth(s)
-        case 'W' => tiltWest(s)
-        case 'S' => tiltSouth(s)
-        case 'E' => tiltEast(s)
+
+  implicit class TurnableString(s: String) {
+
+    def turnClockwise: String =
+      s.split("\n").map(_.toList).toList.transpose.map(_.reverse.mkString).mkString("\n")
+
+    def tiltUp: String = {
+      val originalColumns = s.split("\n").map(_.toList).toList.transpose
+      val tiltedColumns = originalColumns.map { column =>
+        column.mkString.split("#", -1).map { partBetweenFixStones =>
+          val (spaces, rollingStones) = partBetweenFixStones.partition(_ == 'O')
+          spaces.mkString + rollingStones.mkString
+        }.mkString("#")
       }
-    }
-  }
 
-
-  private def tiltUp(input: String): String = {
-    val originalColumns = input.split("\n").map(_.toList).toList.transpose
-    val tiltedColumns = originalColumns.map { column =>
-      column.mkString.split("#", -1).map { partBetweenFixStones =>
-        val (spaces, rollingStones) = partBetweenFixStones.partition(_ == 'O')
-        spaces.mkString + rollingStones.mkString
-      }.mkString("#")
+      tiltedColumns.transpose.map(_.mkString).mkString("\n")
     }
 
-    tiltedColumns.transpose.map(_.mkString).mkString("\n")
+    def tiltNorth: String =
+      s.tiltUp
+
+    def tiltWest: String =
+      s.turnClockwise
+       .tiltUp
+       .turnClockwise
+       .turnClockwise
+       .turnClockwise
+
+    def tiltSouth: String =
+      s.turnClockwise
+       .turnClockwise
+       .tiltUp
+       .turnClockwise
+       .turnClockwise
+
+    def tiltEast: String =
+      s.turnClockwise
+       .turnClockwise
+       .turnClockwise
+       .tiltUp
+       .turnClockwise
+
+    def tiltInCycle(cycleDirections: List[Char]): String =
+      cycleDirections.foldLeft(s) { case (sAfter, dir) =>
+        dir match {
+          case 'N' => sAfter.tiltNorth
+          case 'W' => sAfter.tiltWest
+          case 'S' => sAfter.tiltSouth
+          case 'E' => sAfter.tiltEast
+        }
+      }
   }
-
-  private def turnClockwise(input: String): String =
-    input.split("\n").map(_.toList).toList.transpose.map(_.reverse.mkString).mkString("\n")
-
-  private def tiltNorth(input: String): String =
-    tiltUp(input)
-
-  private def tiltWest(input: String): String =
-    turnClockwise(turnClockwise(turnClockwise(tiltUp(turnClockwise(input)))))
-
-  private def tiltSouth(input: String): String =
-    turnClockwise(turnClockwise(tiltUp(turnClockwise(turnClockwise(input)))))
-
-  private def tiltEast(input: String): String =
-    turnClockwise(tiltUp(turnClockwise(turnClockwise(turnClockwise(input)))))
 
 }
