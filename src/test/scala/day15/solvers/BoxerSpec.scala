@@ -10,13 +10,13 @@ case class Lens(label: String, focalLength: Int)
 
 object Boxer extends ProblemSolver[String, Map[Int, Queue[Lens]]] {
   override def solve(input: String): Map[Int, Queue[Lens]] = {
-    val inputParts = input.split("=", -1)
-    val label = inputParts(0)
-    val focalLength = inputParts(1).toInt
-
-    Map(
-      0 -> Queue(Lens(label, focalLength))
-    )
+    input.split(",").map { operation =>
+      val parts = operation.split("=", -1)
+      val label = parts(0)
+      val focalLength = parts(1).toInt
+      val index = Hasher.solve(label)
+      (index, Queue(Lens(label, focalLength)))
+    }.toMap
   }
 }
 
@@ -28,6 +28,15 @@ class BoxerSpec extends AnyFlatSpec with Matchers {
     val input = "rn=1"
     val expectedResult = Map(
       0 -> Queue(Lens("rn", 1))
+    )
+    Boxer.solve(input) shouldBe expectedResult
+  }
+
+  it should "correctly insert a second lens to a different bucket" in {
+    val input = "rn=1,qp=3"
+    val expectedResult = Map(
+      0 -> Queue(Lens("rn", 1)),
+      1 -> Queue(Lens("qp", 3))
     )
     Boxer.solve(input) shouldBe expectedResult
   }
