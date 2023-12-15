@@ -16,18 +16,15 @@ class AdvancedPlatformTilter(cycleDirections: List[Char], cycleCount: Int) exten
   private def getCycleOutput(cycleId: Int, input: String): String = {
     if (cycleId >= cycleCount) input
     else {
-      if (cache.contains(input)) {
-        val loopStart = cache(input)
-        val loopLength = cycleId-loopStart
-        val targetModulo = (cycleCount - loopStart) % loopLength + loopStart
-
-        cache.find { case (key, id) => id == targetModulo }.get._1
-      } else {
-        cache.put(input, cycleId)
-
-        getCycleOutput(cycleId+1, input.tiltInCycle(cycleDirections))
+      cache.get(input) match {
+        case None =>
+          cache.put(input, cycleId)
+          getCycleOutput(cycleId + 1, input.tiltInCycle(cycleDirections))
+        case Some(loopStart) =>
+          val loopLength = cycleId - loopStart
+          val targetModulo = (cycleCount - loopStart) % loopLength + loopStart
+          cache.find { case (key, id) => id == targetModulo }.get._1
       }
-
     }
   }
 
