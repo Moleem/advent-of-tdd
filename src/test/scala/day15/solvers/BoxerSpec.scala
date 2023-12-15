@@ -87,4 +87,13 @@ class BoxerSpec extends AnyFlatSpec with Matchers {
     Boxer.solve(input) shouldBe expectedResult
   }
 
+  it should "work on the original example" in {
+    val input = "rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7"
+    val expectedResult = Map(
+      0 -> List(Lens("rn", 1), Lens("cm", 2)),
+      3 -> List(Lens("ot", 7), Lens("ab", 5), Lens("pc", 6))
+    )
+    Boxer.solve(input) shouldBe expectedResult
+  }
+
 }
