@@ -19,12 +19,20 @@ case object EmptyTile extends Tile {
       case Left => List(
         ((coordinates._1, coordinates._2-1), Left)
       )
+      case Up => List(
+        ((coordinates._1-1, coordinates._2), Up)
+      )
+      case Down => List(
+        ((coordinates._1+1, coordinates._2), Down)
+      )
     }
 }
 
 sealed trait Direction
 case object Right extends Direction
 case object Left extends Direction
+case object Up extends Direction
+case object Down extends Direction
 
 class EnergizedTileFinder(startRow: Int, startCol: Int, direction: Direction) extends ProblemSolver[String, String] {
 
@@ -105,6 +113,32 @@ class EnergizedTileFinderSpec extends AnyFlatSpec with Matchers {
         |.....""".stripMargin
 
     new EnergizedTileFinder(1, 4, Left).solve(input) shouldBe expectedOutput
+  }
+
+  it should "work (empty tile, beam travels up)" in {
+    val input =
+      """.....
+        |.....
+        |.....""".stripMargin
+    val expectedOutput =
+      """..#..
+        |..#..
+        |..#..""".stripMargin
+
+    new EnergizedTileFinder(2, 2, Up).solve(input) shouldBe expectedOutput
+  }
+
+  it should "work (empty tile, beam travels down)" in {
+    val input =
+      """.....
+        |.....
+        |.....""".stripMargin
+    val expectedOutput =
+      """..#..
+        |..#..
+        |..#..""".stripMargin
+
+    new EnergizedTileFinder(0, 2, Down).solve(input) shouldBe expectedOutput
   }
 
 }
