@@ -48,8 +48,8 @@ case object VerticalSplitter extends Tile {
   override def handleLight(coordinates: (Int, Int), fromDirection: Direction): List[((Int, Int), Direction)] =
     fromDirection match {
       case Right | Left => List(
-        ((coordinates._1+1, coordinates._2), Up),
-        ((coordinates._1-1, coordinates._2), Down)
+        ((coordinates._1+1, coordinates._2), Down),
+        ((coordinates._1-1, coordinates._2), Up)
       )
       case Up => List(
         ((coordinates._1 - 1, coordinates._2), Up)
@@ -114,7 +114,8 @@ class EnergizedTileFinder(startRow: Int, startCol: Int, direction: Direction) ex
     val energizedTileCoordinates = getEnergizedTileCoordinates(
       lightSourcesToCheck = List(((startRow, startCol), direction)),
       tiles = tiles,
-      resultAccumulator = List.empty[(Int, Int)]
+      lightSourcesChecked = List.empty,
+      resultAccumulator = List.empty
     )
 
     drawEnergizedTileMap(rowCount, colCount, energizedTileCoordinates)
@@ -137,15 +138,18 @@ class EnergizedTileFinder(startRow: Int, startCol: Int, direction: Direction) ex
   private def getEnergizedTileCoordinates(
                 lightSourcesToCheck: List[((Int, Int), Direction)],
                 tiles: Map[(Int, Int), Tile],
+                lightSourcesChecked: List[((Int, Int), Direction)],
                 resultAccumulator: List[(Int, Int)]): List[(Int, Int)] =
     lightSourcesToCheck match {
       case Nil => resultAccumulator
       case (coordinates, direction) :: tail =>
+        val state = drawEnergizedTileMap(10, 10, resultAccumulator)
         tiles.get(coordinates) match {
-          case None =>
-            getEnergizedTileCoordinates(tail, tiles, coordinates :: resultAccumulator)
-          case Some(tile) =>
-            getEnergizedTileCoordinates(tail ++ tile.handleLight(coordinates, direction), tiles, coordinates :: resultAccumulator)
+          case Some(tile) if !lightSourcesChecked.contains(coordinates, direction) =>
+            getEnergizedTileCoordinates(tile.handleLight(coordinates, direction) ++ tail, tiles, (coordinates, direction) :: lightSourcesChecked, coordinates :: resultAccumulator)
+          case _ =>
+            getEnergizedTileCoordinates(tail, tiles, (coordinates, direction) :: lightSourcesChecked, coordinates :: resultAccumulator)
+
       }
     }
 
@@ -435,6 +439,38 @@ class EnergizedTileFinderSpec extends AnyFlatSpec with Matchers {
         |.....""".stripMargin
 
     new EnergizedTileFinder(0, 2, Down).solve(input) shouldBe expectedOutput
+  }
+
+  it should "work on the example" in {
+    val input =
+      """.|...\....
+        ||.-.\.....
+        |.....|-...
+        |........|.
+        |..........
+        |.........\
+        |..../.\\..
+        |.-.-/..|..
+        |.|....-|.\
+        |..//.|....""".stripMargin
+
+    val expectedOutput =
+      """######....
+        |.#...#....
+        |.#...#####
+        |.#...##...
+        |.#...##...
+        |.#...##...
+        |.#..####..
+        |########..
+        |.#######..
+        |.#...#.#..""".stripMargin
+
+    println(expectedOutput)
+
+    println(new EnergizedTileFinder(0, 0, Right).solve(input))
+
+    new EnergizedTileFinder(0, 0, Right).solve(input) shouldBe expectedOutput
   }
 
 }
