@@ -78,6 +78,24 @@ case object DownLeaningMirror extends Tile {
     }
 }
 
+case object UpLeaningMirror extends Tile {
+  override def handleLight(coordinates: (Int, Int), fromDirection: Direction): List[((Int, Int), Direction)] =
+    fromDirection match {
+      case Right => List(
+        ((coordinates._1 - 1, coordinates._2), Up)
+      )
+      case Left => List(
+        ((coordinates._1+1, coordinates._2), Down)
+      )
+      case Up => List(
+        ((coordinates._1, coordinates._2 + 1), Right)
+      )
+      case Down => List(
+        ((coordinates._1, coordinates._2-1), Left)
+      )
+    }
+}
+
 sealed trait Direction
 case object Right extends Direction
 case object Left extends Direction
@@ -110,6 +128,7 @@ class EnergizedTileFinder(startRow: Int, startCol: Int, direction: Direction) ex
           case '-' => HorizontalSplitter
           case '|' => VerticalSplitter
           case '\\' => DownLeaningMirror
+          case '/' => UpLeaningMirror
         })
       }
     }.toMap
@@ -357,6 +376,62 @@ class EnergizedTileFinderSpec extends AnyFlatSpec with Matchers {
     val expectedOutput =
       """..#..
         |..###
+        |.....""".stripMargin
+
+    new EnergizedTileFinder(0, 2, Down).solve(input) shouldBe expectedOutput
+  }
+
+  it should "work (up leaning mirror, beam travels right)" in {
+    val input =
+      """.....
+        |../..
+        |.....""".stripMargin
+
+    val expectedOutput =
+      """..#..
+        |###..
+        |.....""".stripMargin
+
+    new EnergizedTileFinder(1, 0, Right).solve(input) shouldBe expectedOutput
+  }
+
+  it should "work (up leaning mirror, beam travels left)" in {
+    val input =
+      """.....
+        |../..
+        |.....""".stripMargin
+
+    val expectedOutput =
+      """.....
+        |..###
+        |..#..""".stripMargin
+
+    new EnergizedTileFinder(1, 4, Left).solve(input) shouldBe expectedOutput
+  }
+
+  it should "work (up leaning mirror, beam travels up)" in {
+    val input =
+      """.....
+        |../..
+        |.....""".stripMargin
+
+    val expectedOutput =
+      """.....
+        |..###
+        |..#..""".stripMargin
+
+    new EnergizedTileFinder(2, 2, Up).solve(input) shouldBe expectedOutput
+  }
+
+  it should "work (up leaning mirror, beam travels down)" in {
+    val input =
+      """.....
+        |../..
+        |.....""".stripMargin
+
+    val expectedOutput =
+      """..#..
+        |###..
         |.....""".stripMargin
 
     new EnergizedTileFinder(0, 2, Down).solve(input) shouldBe expectedOutput
