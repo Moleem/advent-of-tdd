@@ -16,6 +16,9 @@ case object EmptyTile extends Tile {
       case Right => List(
         ((coordinates._1, coordinates._2+1), Right)
       )
+      case Left => List(
+        ((coordinates._1, coordinates._2-1), Left)
+      )
     }
 }
 
