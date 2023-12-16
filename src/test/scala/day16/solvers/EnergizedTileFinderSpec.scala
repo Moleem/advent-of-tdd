@@ -214,4 +214,60 @@ class EnergizedTileFinderSpec extends AnyFlatSpec with Matchers {
     new EnergizedTileFinder(0, 2, Down).solve(input) shouldBe expectedOutput
   }
 
+  it should "work (vertical splitter, beam travels right)" in {
+    val input =
+      """.....
+        |..|..
+        |.....""".stripMargin
+
+    val expectedOutput =
+      """..#..
+        |###..
+        |..#..""".stripMargin
+
+    new EnergizedTileFinder(1, 0, Right).solve(input) shouldBe expectedOutput
+  }
+
+  it should "work (vertical splitter, beam travels left)" in {
+    val input =
+      """.....
+        |..|..
+        |.....""".stripMargin
+
+    val expectedOutput =
+      """..#..
+        |..###
+        |..#..""".stripMargin
+
+    new EnergizedTileFinder(1, 4, Left).solve(input) shouldBe expectedOutput
+  }
+
+  it should "work (vertical splitter, beam travels up)" in {
+    val input =
+      """.....
+        |..|..
+        |.....""".stripMargin
+
+    val expectedOutput =
+      """..#..
+        |..#..
+        |..#..""".stripMargin
+
+    new EnergizedTileFinder(2, 2, Up).solve(input) shouldBe expectedOutput
+  }
+
+  it should "work (vertical splitter, beam travels down)" in {
+    val input =
+      """.....
+        |..|..
+        |.....""".stripMargin
+
+    val expectedOutput =
+      """..#..
+        |..#..
+        |..#..""".stripMargin
+
+    new EnergizedTileFinder(0, 2, Down).solve(input) shouldBe expectedOutput
+  }
+
 }
