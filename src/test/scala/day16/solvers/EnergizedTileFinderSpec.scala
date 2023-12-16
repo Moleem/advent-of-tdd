@@ -44,6 +44,22 @@ case object HorizontalSplitter extends Tile {
     }
 }
 
+case object VerticalSplitter extends Tile {
+  override def handleLight(coordinates: (Int, Int), fromDirection: Direction): List[((Int, Int), Direction)] =
+    fromDirection match {
+      case Right | Left => List(
+        ((coordinates._1, coordinates._2+1), Left),
+        ((coordinates._1, coordinates._2-1), Right)
+      )
+      case Up => List(
+        ((coordinates._1 - 1, coordinates._2), Up)
+      )
+      case Down => List(
+        ((coordinates._1 + 1, coordinates._2), Down)
+      )
+    }
+}
+
 sealed trait Direction
 case object Right extends Direction
 case object Left extends Direction
@@ -74,6 +90,7 @@ class EnergizedTileFinder(startRow: Int, startCol: Int, direction: Direction) ex
         (row, col) -> (matrix(row)(col) match {
           case '.' => EmptyTile
           case '-' => HorizontalSplitter
+          case '|' => VerticalSplitter
         })
       }
     }.toMap
