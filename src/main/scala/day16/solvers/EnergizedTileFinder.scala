@@ -46,7 +46,6 @@ class EnergizedTileFinder(startRow: Int, startCol: Int, direction: Direction) ex
     lightSourcesToCheck match {
       case Nil => resultAccumulator
       case (coordinates, direction) :: tail =>
-        val state = drawEnergizedTileMap(10, 10, resultAccumulator)
         tiles.get(coordinates) match {
           case Some(tile) if !lightSourcesChecked.contains(coordinates, direction) =>
             getEnergizedTileCoordinates(tile.handleLight(coordinates, direction) ++ tail, tiles, (coordinates, direction) :: lightSourcesChecked, coordinates :: resultAccumulator)
