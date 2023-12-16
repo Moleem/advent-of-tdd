@@ -1,6 +1,6 @@
 package day15
 
-import day15.solvers.Hasher
+import day15.solvers.{BoxSummarizer, Boxer, Hasher}
 import utils.PrintSolution
 import utils.parsers.StringReader
 
@@ -17,7 +17,7 @@ object Runner extends App {
   PrintSolution(
     inputFileName = s"/$dayNum/input-2.txt",
     contentParser = StringReader,
-    problemSolver = ???
+    problemSolver = Boxer andThen BoxSummarizer
   )
 
 }
