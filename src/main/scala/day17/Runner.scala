@@ -1,6 +1,6 @@
 package day17
 
-import day17.solvers.{MinimizeHeatLoss, MinimizeHeatLossMutable}
+import day17.solvers.{MinimizeHeatLoss, MinimizeHeatLossMutable, MinimizeHeatLossMutable2}
 import utils.PrintSolution
 import utils.parsers.StringReader
 
@@ -14,10 +14,10 @@ object Runner extends App {
     problemSolver = MinimizeHeatLossMutable
   )
 
-//  PrintSolution(
-//    inputFileName = s"/$dayNum/input-2.txt",
-//    contentParser = DummyTask2Parser,
-//    problemSolver = DummyTask2Solver
-//  )
+  PrintSolution(
+    inputFileName = s"/$dayNum/input-2.txt",
+    contentParser = StringReader,
+    problemSolver = MinimizeHeatLossMutable2
+  )
 
 }
