@@ -21,16 +21,18 @@ class HoleInteriorDiggerSpec extends AnyFlatSpec with Matchers {
         |.######""".stripMargin
 
     val expectedOutput =
-      """#######
-        |#######
-        |#######
-        |..#####
-        |..#####
-        |#######
-        |#####..
-        |#######
-        |.######
-        |.######""".stripMargin
+      """.........
+        |.#######.
+        |.#######.
+        |.#######.
+        |...#####.
+        |...#####.
+        |.#######.
+        |.#####...
+        |.#######.
+        |..######.
+        |..######.
+        |.........""".stripMargin
 
     HoleInteriorDigger.solve(input) shouldBe expectedOutput
   }
