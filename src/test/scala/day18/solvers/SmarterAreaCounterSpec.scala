@@ -10,7 +10,20 @@ class SmarterAreaCounterSpec extends AnyFlatSpec with Matchers {
   it should "be able to count area for a line" in {
     val input = List(('R', 3))
     // ###
-    SmarterAreaCounter.solve(input) shouldBe 3
+    SmarterAreaCounter.solve(input) shouldBe 4
+  }
+
+  it should "be able to count area for a rectangle" in {
+    val input = List(
+      ('R', 3),
+      ('D', 2),
+      ('L', 3),
+      ('U', 2),
+    )
+    // ####
+    // ####
+    // ####
+    SmarterAreaCounter.solve(input) shouldBe 12
   }
 
 }

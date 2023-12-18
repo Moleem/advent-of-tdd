@@ -8,7 +8,10 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
 
     input.foreach { case (direction, distance) =>
       direction match {
-        case 'R' => area += distance
+        case 'R' => area += (distance+1)
+        case 'D' => area *= (distance+1)
+        case 'L' =>
+        case 'U' =>
       }
     }
 
