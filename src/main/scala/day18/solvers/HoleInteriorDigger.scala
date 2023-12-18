@@ -3,6 +3,8 @@ package day18.solvers
 import utils.ProblemSolver
 
 import scala.annotation.tailrec
+import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 object HoleInteriorDigger extends ProblemSolver[String, String] {
   override def solve(input: String): String = {
@@ -34,31 +36,42 @@ object HoleInteriorDigger extends ProblemSolver[String, String] {
       } .toList
     }.toList
 
-  @tailrec
-  private def flood(toBeFlooded: Set[(Int, Int)], m: List[List[Char]]): List[List[Char]] =
-    if (toBeFlooded.isEmpty) {
-      m
-    } else {
-      val next = toBeFlooded.head
-      if (m(next._1)(next._2) == '#')
-        flood(toBeFlooded.tail, m)
-      else {
+  private def flood(tbf: Set[(Int, Int)], m: List[List[Char]]): List[List[Char]] = {
+    val toBeFlooded = new mutable.Stack[(Int, Int)]()
+    toBeFlooded.pushAll(tbf)
+
+    val matrix = new ListBuffer[ListBuffer[Char]]()
+    m.indices. foreach { row =>
+      val thisRow = new ListBuffer[Char]()
+      m.head.indices.foreach { col =>
+        thisRow.addOne(m(row)(col))
+      }
+      matrix.addOne(thisRow)
+    }
+
+
+    while(toBeFlooded.nonEmpty) {
+      val next = toBeFlooded.pop()
+
+      if (matrix(next._1)(next._2) == '#') {
+        // do nothing
+      } else {
         val neighborsToFlood = Set(
           (next._1 + 1, next._2),
           (next._1 - 1, next._2),
           (next._1, next._2 + 1),
           (next._1, next._2 - 1)
-        ).filter { case (row, col) => row >= 0 && col >= 0 && row < m.size && col < m.head.size }
-          .filter { case (row, col) => m(row)(col) == 'x' }
+        ).filter { case (row, col) => row >= 0 && col >= 0 && row < matrix.size && col < matrix.head.size }
+          .filter { case (row, col) => matrix(row)(col) == 'x' }
 
-        val newM = m.indices.map { row =>
-          m.head.indices.map { col =>
-            if (row == next._1 && col == next._2) '.'
-            else m(row)(col)
-          }.toList
-        }.toList
+        toBeFlooded.pushAll(neighborsToFlood)
 
-        flood(neighborsToFlood ++ toBeFlooded.tail, newM)
+        matrix(next._1)(next._2) = '.'
       }
     }
+
+
+
+    matrix.map(_.toList).toList
+  }
 }
