@@ -47,17 +47,6 @@ object MinimizeHeatLoss extends ProblemSolver[String, Int] {
       smallestKnownHeatLosses = Map(CacheKey(start, None, 0) -> 0)
     )
 
-//    numsMatrix.zipWithIndex.foreach { case (row, rowId) =>
-//      row.zipWithIndex.foreach { case (heatLoss, colId) =>
-//        print(f"${cityBlocks(Coordinate(rowId, colId))}%1d / (${heatLossMap
-//          .filter{ case (key, value) => key.coordinate == Coordinate(rowId, colId)}
-//        }%3d) ")
-//      }
-//      println()
-//    }
-
-    print(heatLossMap)
-
     heatLossMap.toList.filter { case (key, value) => key.coordinate == end }.map { case (key, value) => value }.min
   }
 
@@ -114,13 +103,19 @@ object MinimizeHeatLoss extends ProblemSolver[String, Int] {
           .sortBy { case (direction, coordinate) => cityBlocks(coordinate) }
 
         val newRemainingSteps = remainingNeighborsByHeatLoss.map { case (direction, coordinate) =>
-          HeatLossDiscoveryStep(coordinate, head.accumulatedHeatLoss + cityBlocks(coordinate), Some(direction), if (head.prevDirection.contains(direction)) head.straightStepsSoFar+1 else 1)
+          HeatLossDiscoveryStep(coordinate, head.accumulatedHeatLoss + cityBlocks(coordinate), Some(direction), if (head.prevDirection.contains(direction)) head.straightStepsSoFar + 1 else 1)
         } ++ tail
+
+//        val newRemainingStepsSorted = newRemainingSteps.sortBy(_.accumulatedHeatLoss)
 
         val newSmallestKnownHeatLosses = smallestKnownHeatLosses.updated(
           CacheKey(head.coordinate, head.prevDirection.map(_.oppositeDirection).map(head.coordinate.getNeighborAt), head.straightStepsSoFar),
           Math.min(head.accumulatedHeatLoss, smallestKnownHeatLosses.getOrElse(CacheKey(head.coordinate, head.prevDirection.map(_.oppositeDirection).map(head.coordinate.getNeighborAt), head.straightStepsSoFar), head.accumulatedHeatLoss))
         )
+
+        if (head.coordinate == Coordinate(140,140))
+          println(newSmallestKnownHeatLosses(CacheKey(head.coordinate, head.prevDirection.map(_.oppositeDirection).map(head.coordinate.getNeighborAt), head.straightStepsSoFar)))
+
 
         getMinHeatLossMap(
           cityBlocks = cityBlocks,
