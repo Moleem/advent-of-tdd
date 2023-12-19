@@ -83,7 +83,8 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
       cornersOfThisRow.sliding(2).foreach { case List(c1, c2) =>
         (c1.cornerType, c2.cornerType) match {
           case (┌, ┐) =>
-            thisRow.addOne((c1.col, c2.col))
+            if (!thisRow.exists { case (start, end) => start < c1.col && end > c2.col})
+              thisRow.addOne((c1.col, c2.col))
           case (└, ┐) =>
             thisRow.find(_._2 == c1.col).foreach { intervalToBeExpanded =>
               thisRow.remove(intervalToBeExpanded)
@@ -104,6 +105,12 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
 
         cornersOfThisRow.sliding(2).foreach { case List(c1, c2) =>
           (c1.cornerType, c2.cornerType) match {
+            case (┌, ┐) =>
+              nextRow.find { case (start, end) => start < c1.col && end > c2.col}.foreach { intervalToBeSplit =>
+                nextRow.remove(intervalToBeSplit)
+                nextRow.addOne(intervalToBeSplit.copy(_2 = c1.col))
+                nextRow.addOne(intervalToBeSplit.copy(_1 = c2.col))
+              }
             case (└, ┘) =>
               nextRow.remove((c1.col, c2.col))
             case (└, ┐) =>
