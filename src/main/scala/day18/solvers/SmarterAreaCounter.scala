@@ -85,6 +85,12 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
           case (┌, ┐) =>
             if (!thisRow.exists { case (start, end) => start < c1.col && end > c2.col})
               thisRow.addOne((c1.col, c2.col))
+          case (└, ┘) =>
+            val intervalsToBeMerged = thisRow.filter { case (start, end) => end == c1.col || start == c2.col}
+            if (intervalsToBeMerged.nonEmpty) {
+              intervalsToBeMerged.foreach(thisRow.remove)
+              thisRow.addOne((intervalsToBeMerged.map(_._1).min, intervalsToBeMerged.map(_._2).max))
+            }
           case (└, ┐) =>
             thisRow.find(_._2 == c1.col).foreach { intervalToBeExpanded =>
               thisRow.remove(intervalToBeExpanded)
@@ -112,7 +118,8 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
                 nextRow.addOne(intervalToBeSplit.copy(_1 = c2.col))
               }
             case (└, ┘) =>
-              nextRow.remove((c1.col, c2.col))
+              if (nextRow.exists{ case (start, end) => start == c1.col && end == c2.col})
+                nextRow.remove((c1.col, c2.col))
             case (└, ┐) =>
               nextRow.find(_._1 == c1.col).foreach { intervalToBeReduced =>
                 nextRow.remove(intervalToBeReduced)
@@ -135,9 +142,13 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
       //|-----|------------------|-------------------|
       //|┌  ┐ | add              | add same          |
       //|-----|------------------|-------------------|
+      //|┌  ┐ | none             | split             |
+      //|-----|------------------|-------------------|
       //|     | none             | add same          |
       //|-----|------------------|-------------------|
       //|└  ┘ | none             | remove            |
+      //|-----|------------------|-------------------|
+      //|└  ┘ | merge            | add same          |
       //|-----|------------------|-------------------|
       //|└  ┐ | none             | (r) decrease      |
       //|-----|------------------|-------------------|
