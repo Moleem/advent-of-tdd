@@ -21,7 +21,7 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
     var currentRow = 0;
     var previousDirection: Char = input.last._1
     val corners = new ListBuffer[CornerPoint]
-    val intervals = new ListBuffer[mutable.HashSet[(Int, Int)]]
+    val intervals = new mutable.HashMap[Int, mutable.HashSet[(Int, Int)]]
 
     input.foreach { case (direction, distance) =>
       direction match {
@@ -72,7 +72,7 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
     // add interval placeholders
     (corners.map(_.row).min to corners.map(_.row).max).foreach { row =>
       val intervalsForRow = new mutable.HashSet[(Int, Int)]
-      intervals.addOne(intervalsForRow)
+      intervals.put(row, intervalsForRow)
     }
 
     (corners.map(_.row).min to corners.map(_.row).max).foreach { row =>
@@ -160,7 +160,7 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
       //|-----|------------------|-------------------|
     }
 
-    val result = intervals.flatMap(intervalsForRow => intervalsForRow.map{ case (start, end) => 1+end-start}).sum
+    val result = intervals.values.flatMap(intervalsForRow => intervalsForRow.map{ case (start, end) => 1+end-start}).sum
     result
   }
 }
