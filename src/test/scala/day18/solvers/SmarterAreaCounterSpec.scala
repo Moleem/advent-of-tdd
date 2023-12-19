@@ -18,6 +18,19 @@ class SmarterAreaCounterSpec extends AnyFlatSpec with Matchers {
     // ###
     SmarterAreaCounter.solve(input) shouldBe 6
   }
+  it should "work on long rectangles" in {
+    val input = List(
+      ('R', 2),
+      ('D', 3),
+      ('L', 2),
+      ('U', 3)
+    )
+    // ###
+    // ###
+    // ###
+    // ###
+    SmarterAreaCounter.solve(input) shouldBe 12
+  }
 
   it should "work on bottom left reduction" in {
     val input = List(
