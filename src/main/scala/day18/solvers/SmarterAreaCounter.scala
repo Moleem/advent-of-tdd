@@ -126,26 +126,30 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
               nextRow.addOne((firstCorner.col, secondCorner.col))
             case (└, ┘) =>
               thisRow.addOne((firstCorner.col, secondCorner.col))
-            case (└, ┐) if thisRow.exists(_._1 == firstCorner.col) =>
+            case (└, ┐) =>
               nextRow.addAll(
                 thisRow.map { interval =>
                   if (interval._1 == firstCorner.col) {
                     interval.copy(_1 = secondCorner.col)
+                  } else if (interval._2 == firstCorner.col) {
+                    interval.copy(_2 = secondCorner.col)
                   } else {
                     interval
                   }
                 }
               )
-            case (┌, ┘) if thisRow.exists(_._2 == secondCorner.col) =>
-              nextRow.addAll(
-                thisRow.map { interval =>
-                  if (interval._2 == secondCorner.col) {
-                    interval.copy(_2 = firstCorner.col)
-                  } else {
-                    interval
-                  }
-                }
-              )
+            case (┌, ┘) =>
+              val intervalToBeReduced = thisRow.find(_._2 == secondCorner.col)
+              val reducedInterval = intervalToBeReduced.map(_.copy(_2 = firstCorner.col))
+              val intervalToBeExpanded = thisRow.find(_._1 == secondCorner.col)
+              val expandedInterval = intervalToBeExpanded.map(_.copy(_1 = firstCorner.col))
+
+              intervalToBeExpanded.foreach(thisRow.remove)
+              expandedInterval.foreach(thisRow.addOne)
+
+              nextRow.addAll(thisRow)
+              intervalToBeReduced.foreach(nextRow.remove)
+              reducedInterval.foreach(nextRow.addOne)
           }
 
           cornersInRow.remove(0, 2)
