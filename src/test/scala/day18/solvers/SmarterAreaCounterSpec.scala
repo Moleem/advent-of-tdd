@@ -170,6 +170,22 @@ class SmarterAreaCounterSpec extends AnyFlatSpec with Matchers {
     SmarterAreaCounter.solve(input) shouldBe 16
   }
 
+  it should "work on shapes the do above the start point" in {
+    val input = List(
+      ('R', 2),
+      ('U', 2),
+      ('R', 1),
+      ('D', 3),
+      ('L', 3),
+      ('U', 1)
+    )
+    //   ##
+    //   ##
+    // ####
+    // ####
+    SmarterAreaCounter.solve(input) shouldBe 12
+  }
+
   it should "work on the example" in {
     val input = List(
       ('R', 6),
