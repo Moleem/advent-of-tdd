@@ -124,20 +124,23 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
             case (┌, ┐) =>
               thisRow.addOne((firstCorner.col, secondCorner.col))
               nextRow.addOne((firstCorner.col, secondCorner.col))
+
             case (└, ┘) =>
               thisRow.addOne((firstCorner.col, secondCorner.col))
+
             case (└, ┐) =>
-              nextRow.addAll(
-                thisRow.map { interval =>
-                  if (interval._1 == firstCorner.col) {
-                    interval.copy(_1 = secondCorner.col)
-                  } else if (interval._2 == firstCorner.col) {
-                    interval.copy(_2 = secondCorner.col)
-                  } else {
-                    interval
-                  }
-                }
-              )
+              val intervalToBeReduced = thisRow.find(_._1 == firstCorner.col)
+              val reducedInterval = intervalToBeReduced.map(_.copy(_1 = secondCorner.col))
+              val intervalToBeExpanded = thisRow.find(_._2 == firstCorner.col)
+              val expandedInterval = intervalToBeExpanded.map(_.copy(_2 = secondCorner.col))
+
+              intervalToBeExpanded.foreach(thisRow.remove)
+              expandedInterval.foreach(thisRow.addOne)
+
+              nextRow.addAll(thisRow)
+              intervalToBeReduced.foreach(nextRow.remove)
+              reducedInterval.foreach(nextRow.addOne)
+
             case (┌, ┘) =>
               val intervalToBeReduced = thisRow.find(_._2 == secondCorner.col)
               val reducedInterval = intervalToBeReduced.map(_.copy(_2 = firstCorner.col))
