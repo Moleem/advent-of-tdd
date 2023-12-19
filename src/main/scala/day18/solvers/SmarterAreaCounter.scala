@@ -129,6 +129,9 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
               thisRow.addOne((firstCorner.col, secondCorner.col))
 
             case (└, ┐) =>
+              if (nextRow.isEmpty)
+                nextRow.addAll(thisRow)
+
               val intervalToBeReduced = thisRow.find(_._1 == firstCorner.col)
               val reducedInterval = intervalToBeReduced.map(_.copy(_1 = secondCorner.col))
               val intervalToBeExpanded = thisRow.find(_._2 == firstCorner.col)
@@ -137,11 +140,13 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
               intervalToBeExpanded.foreach(thisRow.remove)
               expandedInterval.foreach(thisRow.addOne)
 
-              nextRow.addAll(thisRow)
               intervalToBeReduced.foreach(nextRow.remove)
               reducedInterval.foreach(nextRow.addOne)
 
             case (┌, ┘) =>
+              if (nextRow.isEmpty)
+                nextRow.addAll(thisRow)
+
               val intervalToBeReduced = thisRow.find(_._2 == secondCorner.col)
               val reducedInterval = intervalToBeReduced.map(_.copy(_2 = firstCorner.col))
               val intervalToBeExpanded = thisRow.find(_._1 == secondCorner.col)
@@ -150,7 +155,7 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
               intervalToBeExpanded.foreach(thisRow.remove)
               expandedInterval.foreach(thisRow.addOne)
 
-              nextRow.addAll(thisRow)
+
               intervalToBeReduced.foreach(nextRow.remove)
               reducedInterval.foreach(nextRow.addOne)
           }
