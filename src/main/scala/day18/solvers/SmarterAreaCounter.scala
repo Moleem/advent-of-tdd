@@ -69,30 +69,78 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
       previousDirection = direction
     }
 
+    // add interval placeholders
     (corners.map(_.row).min to corners.map(_.row).max).foreach { row =>
+      val intervalsForRow = new mutable.HashSet[(Int, Int)]
+      intervals.addOne(intervalsForRow)
+    }
+
+    // add first row intervals
+    val firstRow = intervals.head
+    val nextRow = intervals.tail.head
+    val firstRowCorners = new ListBuffer[CornerPoint]
+    firstRowCorners.addAll(corners.filter(_.row == 0).toList.sortBy(_.col))
+    while (firstRowCorners.nonEmpty) {
+      val firstCorner = firstRowCorners.head
+      val secondCorner = firstRowCorners.tail.head
+      (firstCorner.cornerType, secondCorner.cornerType) match {
+        case (┌, ┐) =>
+          firstRow.addOne((firstCorner.col, secondCorner.col))
+          nextRow.addOne((firstCorner.col, secondCorner.col))
+      }
+      firstRowCorners.remove(0, 2)
+    }
+
+    // add last row intervals
+    val lastRow = intervals.last
+    val lastRowCorners = new ListBuffer[CornerPoint]
+    lastRowCorners.addAll(corners.filter(_.row == corners.map(_.row).max).toList.sortBy(_.col))
+
+    while (lastRowCorners.nonEmpty) {
+      val firstCorner = lastRowCorners.head
+      val secondCorner = lastRowCorners.tail.head
+      (firstCorner.cornerType, secondCorner.cornerType) match {
+        case (└, ┘) =>
+          lastRow.addOne((firstCorner.col, secondCorner.col))
+      }
+      lastRowCorners.remove(0, 2)
+    }
+
+    // middle rows
+    (corners.map(_.row).min + 1 until corners.map(_.row).max).foreach { row =>
       val cornersInRow = new ListBuffer[CornerPoint]
       cornersInRow.addAll(corners.filter(_.row == row).toList.sortBy(_.col))
 
-      val intervalsForRow = new mutable.HashSet[(Int, Int)]
+      val thisRow = intervals(row)
+      val nextRow = intervals(row+1)
 
-      if (row != 0)
-        intervalsForRow.addAll(intervals(row-1))
+      if (cornersInRow.isEmpty) {
+        nextRow.addAll(thisRow)
+      } else {
+        while (cornersInRow.nonEmpty) {
+          val firstCorner = cornersInRow.head
+          val secondCorner = cornersInRow.tail.head
+          (firstCorner.cornerType, secondCorner.cornerType) match {
+            case (┌, ┐) =>
+              thisRow.addOne((firstCorner.col, secondCorner.col))
+              nextRow.addOne((firstCorner.col, secondCorner.col))
+            case (└, ┘) =>
+              thisRow.addOne((firstCorner.col, secondCorner.col))
+            case (└, ┐) if thisRow.exists(_._1 == firstCorner.col)=>
+              nextRow.addAll(
+                thisRow.map {interval =>
+                  if (interval._1 == firstCorner.col) {
+                    interval.copy(_1 = secondCorner.col)
+                  } else {
+                    interval
+                  }
+                }
+              )
+          }
 
-      while (cornersInRow.nonEmpty) {
-        val firstCorner = cornersInRow.head
-        val secondCorner = cornersInRow.tail.head
-        (firstCorner.cornerType, secondCorner.cornerType) match {
-          case (┌, ┐) =>
-            intervalsForRow.addOne((firstCorner.col, secondCorner.col))
-          case (└, ┘) =>
-            intervalsForRow.addOne((firstCorner.col, secondCorner.col))
+          cornersInRow.remove(0, 2)
         }
-
-
-        cornersInRow.remove(0, 2)
       }
-
-      intervals.addOne(intervalsForRow)
 
       // ┌ ┐
       //  - if there are no previous intervals overlapping,
@@ -119,6 +167,7 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
       //    then those intervals will be merged in the next round
     }
 
-    intervals.flatMap(intervalsForRow => intervalsForRow.map{ case (start, end) => 1+end-start}).sum
+    val result = intervals.flatMap(intervalsForRow => intervalsForRow.map{ case (start, end) => 1+end-start}).sum
+    result
   }
 }
