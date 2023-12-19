@@ -24,20 +24,20 @@ class OvercomplicatedDecoderSpec extends AnyFlatSpec with Matchers {
                   |L 1 (#7a21e3)""".stripMargin
 
     val expectedOutput = List(
-      List('R', 461937),
-      List('D', 56407),
-      List('R', 356671),
-      List('D', 863240),
-      List('R', 367720),
-      List('D', 266681),
-      List('L', 577262),
-      List('U', 829975),
-      List('L', 112010),
-      List('D', 829975),
-      List('L', 491645),
-      List('U', 686074),
-      List('L', 5411),
-      List('U', 500254)
+      ('R', 461937),
+      ('D', 56407),
+      ('R', 356671),
+      ('D', 863240),
+      ('R', 367720),
+      ('D', 266681),
+      ('L', 577262),
+      ('U', 829975),
+      ('L', 112010),
+      ('D', 829975),
+      ('L', 491645),
+      ('U', 686074),
+      ('L', 5411),
+      ('U', 500254)
     )
 
     OvercomplicatedDecoder.parse(input) shouldBe expectedOutput
