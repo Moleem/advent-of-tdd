@@ -21,8 +21,12 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
     var currentRow = 0;
     var previousDirection: Char = input.last._1
     val corners = new ListBuffer[CornerPoint]
-    val intervals = new mutable.HashMap[Int, mutable.HashSet[(Int, Int)]]
+    var thisRow = new mutable.HashSet[(Int, Int)]
+    var nextRow = new mutable.HashSet[(Int, Int)]
+    var lastLineValue = 0L
+    var lastLineWasEmpty = true
 
+    println("identifying corners...")
     input.foreach { case (direction, distance) =>
       direction match {
         case 'R' =>
@@ -68,17 +72,14 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
 
       previousDirection = direction
     }
+    println("corners identified...")
 
-    // add interval placeholders
+    println("populating intervals...")
     (corners.map(_.row).min to corners.map(_.row).max).foreach { row =>
-      val intervalsForRow = new mutable.HashSet[(Int, Int)]
-      intervals.put(row, intervalsForRow)
-    }
+      if (row % 100000 == 0)
+        println(s"${corners.map(_.row).min} < $row < ${corners.map(_.row).max}")
 
-    (corners.map(_.row).min to corners.map(_.row).max).foreach { row =>
       val cornersOfThisRow = corners.filter(_.row == row).toList.sortBy(_.col)
-
-      val thisRow = intervals(row)
 
       cornersOfThisRow.sliding(2).foreach { case List(c1, c2) =>
         (c1.cornerType, c2.cornerType) match {
@@ -106,7 +107,7 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
       }
 
       if (row != corners.map(_.row).max) {
-        val nextRow = intervals(row+1)
+        nextRow = new mutable.HashSet[(Int, Int)]
         nextRow.addAll(thisRow)
 
         cornersOfThisRow.sliding(2).foreach { case List(c1, c2) =>
@@ -135,7 +136,11 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
         }
       }
 
+      lastLineValue = thisRow.map{ case (start, end) => 1+end-start}.sum
+      area += lastLineValue
 
+      thisRow = nextRow
+      nextRow = null
 
       //|-----|------------------|-------------------|
       //|     | modifies current | modifies next     |
@@ -160,7 +165,8 @@ object SmarterAreaCounter extends ProblemSolver[List[(Char, Int)], Long] {
       //|-----|------------------|-------------------|
     }
 
-    val result = intervals.values.flatMap(intervalsForRow => intervalsForRow.map{ case (start, end) => 1+end-start}).sum
-    result
+    println("intervals populated...")
+
+    area
   }
 }
